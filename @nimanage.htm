@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>设备属性管理 -- <#GRM_ID></title>
+<!--[if lt IE 8]> 
+</head><body>
+<div style="border-style:solid;background-color:#FFFF80;color:#FF0000;text-align:center">
+<H1>IE浏览器版本太旧，无法正常显示本网页！</H1>
+至少需要升级到IE9以上。<br/>
+推荐使用非IE核心的浏览器(chrome，Firefox，以及国产的傲游maxthon，QQ浏览器，猎豹浏览器，搜狗浏览器等等，<br/>包括iPhone和安卓手机的浏览器)
+</div></body>
+<![endif]-->
+<link href="/jui/jquery-ui.css" rel="stylesheet">
+<style>
+ body { font: 90% Arial,'Times New Roman',宋体,Verdana, sans-serif, Verdana;margin: 0px;  }
+ul, ol, dl, form {padding: 0;margin: 0;}
+h1, h2, h3, h4, h5, h6, p {	margin-top: 0;padding: 0;padding-right: 15px;padding-left: 15px;}
+.smain {font-family:Arial, Helvetica, sans-serif;background-color:#EEE;}
+.container {width:90%;max-width:960px;min-width:320px;margin: 0 auto;background-color:#EEE;}
+.seditsize {max-width:480px;font-size:100%}
+.sbtnsize {	font-size:100%;font-weight:bold;color:#333;}
+.sheader {text-align:center;font-size:150%;background-color:#9CF;padding:10px 5px 5px 5px;}
+.sinp {	__background-color:#EEE;}
+table {	border-collapse:collapse;border-style:none;border-width:1px}
+tr {border-color:#000;}
+td {border-color:#333;}
+td.rt {	text-align:right;}
+td.ct {text-align:center;}
+ul {margin:0;list-style-position:inside;font-size:75%;color:#333;background-color:#CCC;}
+table.clsgrid{border-color:#666;border-width:1px;vertical-align:middle;}
+table.clsgrid td,table.clsgrid th{
+    border-color:#666;
+    border-style:solid;
+    border-width:1px;
+    vertical-align:middle;
+}
+#idSubTabSaveTD { vertical-align:middle;}
+fieldset{margin:3px 3px 10px 3px}
+table.clsnogrid{border-style:none; cursor:pointer;}
+table.clsnogridN{border-style:none;}
+table.clsnogrid td,table.clsnogridN td{border-style:none;vertical-align:middle;}
+.clshischanged{margin-top:10px;text-align:right;color:#A00;}
+.clsmid{text-align:center;}
+.clshedit{width:90%;}
+.no-close .ui-dialog-titlebar-close {  display: none;}
+</style>
+<script>
+if (typeof JSON !== 'object') {
+    document.write("<script src=\"json2.js\" />");
+}
+var g_isoldie = 0;
+
+</script>
+<!--[if lte IE 8]> 
+<script>g_isoldie=1;</script>
+<![endif]-->
+<script src="/jui/jquery.js"></script>
+<script src="/jui/jquery-ui.js"></script>
+<script>
+    "use strict";
+    var GRM = {
+        id: '50999999981', name: 'GRM502设备1', sid: '4E63EA30C14220F7', cmt: '设备描述信息...', img: 'DefImg.gif', SP: '', grmt: 'GRM503-N2L',exop:0, home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 5,
+        tmP: '2015-04-30,12:20:51.748', tmA: '2015-04-30,12:20:48.861', tmL: '2015-04-30,12:19:12.999', st: 3, cols: 2, mob: 1, x_ip: 0, x_d: 0, x_den: 1, x_dip: 1
+    };
+    //<#PARAM1>;
+    //<#PARAM2>;
+    var g_hispage =<#PARAM3>;
+    var g_SubTabDef=<#PARAM4>;
+    function fchkHML(){
+        var enh=GI("idchH").checked,enm=GI("idchM").checked,enl=GI("idchL").checked,enrd=GI("idchRD").checked;
+        var enall=enh||enm||enl||enrd;
+        GI("idHP").disabled=!enh;
+        GI("idHP2").disabled=!enh;
+        GI("idMP").disabled=!enm;
+        GI("idMP2").disabled=!enm;
+        GI("idLP").disabled=!enl;
+        GI("idLP2").disabled=!enl;
+        GI("idRD").disabled=!enrd;
+        GI("CHP").disabled=!enall;
+        GI("idCHPOK").disabled=!enall;
+        if(!enh){
+            GI("idHP").value="";
+            GI("idHP2").value="";
+        }
+        if(!enm){
+            GI("idMP").value="";
+            GI("idMP2").value="";
+        }
+        if(!enl){
+            GI("idLP").value="";
+            GI("idLP2").value="";
+        }
+        if(!enrd){
+            GI("idRD").value="";
+        }
+        if(!enall){
+            GI("CHP").value="";
+        }
+    }
+    function fchkCL(){
+        GI("idchH").checked=false;
+        GI("idchM").checked=false;
+        GI("idchL").checked=false;
+        GI("idchRD").checked=false;
+        GI("CHP").disabled=true;
+        GI("idCHPOK").disabled=true;
+        fchkHML();
+    }
+</script>
+ <script src="/managejs.js"></script>   
+</head>
+<body class="smain"  onload="fBodyLoad();fchkCL();" style="background-image:url(/nimanage_bg.png); background-repeat:repeat;">
+    <div class="container" >
+        <div class="sheader">设备属性管理 -- <#grm_id>&nbsp;&nbsp; <button id="btn_datapage" onclick="window.location.href = '<#PAGE_DATA>';" style="font-size:80%" class=" ">返回数据页面</button>
+           <script>
+            if (GRM.x_phone) {
+                DR('&nbsp;&nbsp;<button id="btn_editphone" onclick="feditphone()" style="font-size:80%">远程编辑电话号码</button>');
+            }
+            if(GRM.x_editlan&&GRM.pr>=2){
+                DR('&nbsp;<button id="btn_editlan" onclick="feditlan()" style="font-size:80%">远程编辑网络设置</button>');
+            }
+           </script>
+          </div>
+        <p style="font-size:3px">&nbsp;</p>        
+            <script>
+                if (GRM.x_ip) {
+                    DR('<div class="stitle" style="color:#800000;">您是用初始密码登录的，必须修改密码才能查看数据！</div>');
+                }
+            </script>
+        <div id="tabs" style="min-height:540px;">
+        <script>
+        DR('<ul><li><a href="#tabs_1">密码和权限</a></li><li><a href="#tabs_2">显示界面管理</a></li>');
+        if(GRM.hasst){
+            DR('<li id="idSubTabPageHdr"><a href="#tabs_stab">子表格配置</a></li>');
+        }
+        if(GRM.x_den){
+            DR('<li ><a href="#tabs_down">远程下载模块配置</a></li>');
+        }
+        if (GRM.x_hen&&GRM.x_hv) {
+            DR('<li id="idHisEditPage"><a href="#tabs_4">历史数据配置</a></li>');
+        }
+        DR("</ul>");
+        </script>
+                <div id="tabs_1">
+                    <form id="chkpass" name="chkpass" class="sinp" action="<#MANAGE_PASS>" method="post" onsubmit="return PassSubmitTest();">
+              <input type="hidden" name="OP" value="PASS"><input type="hidden" name="GRM" value="<#GRM_ID>">
+<table width="100%" border="1" class="clsgrid">
+    <tr><td class="rt" rowspan="2"><label><input type="checkbox" checked="" id="idchH" onclick="fchkHML()"/>修改高权限密码</label> </td>
+    <td> 输入密码:&nbsp; <input class="seditsize" type="password" name="HP" value="" maxlength="15" id="idHP"></td></tr>
+    <tr><td> 重复密码:&nbsp; <input class="seditsize" type="password" name="HP2" value="" maxlength="15" id="idHP2"></td></tr>
+    <tr><td class="rt" rowspan="2"><label><input type="checkbox" checked="" id="idchM" onclick="fchkHML()"/>修改中权限密码</label> </td>
+        <td> 输入密码:&nbsp; <input class="seditsize" type="password" name="MP" value="" maxlength="15" id="idMP" >        </td></tr>
+    <tr><td> 重复密码:&nbsp; <input class="seditsize" type="password" name="MP2" value="" maxlength="15" id="idMP2" ></td></tr>
+    <tr><td class="rt" rowspan="2"><label><input type="checkbox" checked="" id="idchL" onclick="fchkHML()"/>修改低权限密码</label> </td><td> 输入密码:&nbsp; <input class="seditsize" type="password" name="LP" value="" maxlength="15" id="idLP"></td></tr>
+    <tr><td> 重复密码:&nbsp; <input class="seditsize" type="password" name="LP2" value="" maxlength="15" id="idLP2"></td></tr>
+    <tr><td class="rt"><label><input type="checkbox" checked="" id="idchRD" onclick="fchkHML()"/><span id="idRDCaption">变量刷新间隔</span></label></td>
+        <td><input class="seditsize" name="RD" type="text" value="" maxlength="6" id="idRD">(单位0.1秒,范围5-60000) </td></tr>
+    <tr><td colspan="2" align="center">
+<span style="color:#C00"><b>注:</b>不想修改的部分请不要选中! 修改密码的长度为6-15位</span></td></tr>
+    <tr><td class="rt">输入当前的高权限密码以确认修改:</td><td>
+<script>if (GRM.x_ip) {DR('(目前是默认值111111)');}</script>
+            <input class="seditsize" type="password" id="CHP" name="CHP" value="" maxlength="15">
+            <input class="sbtnsize" type="submit" value="确认修改！" id="idCHPOK">
+        </td></tr></table>
+</form></div>
+<div id="tabs_2">
+    <table width="100%" border="1" class="clsgrid">
+<tr><td class="rt">设备描述信息 </td><td>
+<form class="sinp" action="<#MANAGE_POST>" method="post" name="fmEditCmt">
+    <input type="hidden" name="OP" value="EDITCMT">
+    <input class="seditsize" type="text" name="CMT" value="<#GRM_COMMENT>" maxlength="500" style="width:24em">
+    <input class="sbtnsize" type="submit" value="提交修改！">
+</form></td></tr>
+<tr><td class="rt">表格内部列数(PC模式有效)</td>
+<td><form class="sinp" action="<#MANAGE_POST>" method="post" name="fmEditCol">
+    <input type="hidden" name="OP" value="EDITCOL">
+    <script>(function () {var i, ss;
+            for (i = 1; i <= 6; i++) {
+                ss = (i == GRM.cols) ? ' checked ' : ' ';
+                DR('<label><input type="radio" name="COL" value="' + i + '"' + ss + '/>' + i + ((i == 2) ? '列(默认)' : '列') + '</label>'); }
+        })();
+    </script>
+    <input class="sbtnsize" type="submit" value="提交修改！">
+</form></td></tr>
+<tr><td class="rt">设备网站图片 </td><td><img src="<#GRM_IMAGE>"></td></tr>
+<tr><td class="rt">选择新的图片 </td><td>
+<form class="sinp" action="<#MANAGE_UP>" method="post" enctype="multipart/form-data">
+    <input type="file" title="选择图片文件..." name="F" style="font-size: 100%; width: 24em; border-style: solid; border-width: 1px; border-color: #000;" accept=".jpg,.png,.gif"/>
+    <br />
+    图片尺寸最大为320*200像素,文件大小不可超过50KB<br />格式:jpg,png,gif,bmp均可<br />
+    <input class="sbtnsize" type="submit" value="提交修改！">
+</form>
+</td></tr> </table>
+</div>
+<div id="tabs_stab" style="display:none">
+    <div id="idSubTabBox">
+加载中...
+    </div>
+</div>
+<div id="tabs_down" style="text-align: left;">
+    <script>fWriteDownTab();</script>
+</div>
+<div id="tabs_4" style="display:none">
+    <div id="idhisedittable" style="width:90%">
+        <table  style="width:100%" class="clsgrid">
+            <thead><tr><th>序号</th><th>历史页面名称</th><th>变量个数</th><th>操作</th></tr></thead>
+        <tbody> </tbody></table>
+        在IE8或更早版本的IE上无法配置历史曲线！<br />
+        请升级到IE9以上，或者使用非IE核心的浏览器！
+    </div>
+    <fieldset style="width:90%;">
+    <legend style="color:#008;font-weight:bold">删除历史记录</legend>
+        <div style="color:#88C">该功能主要用于删除模块调试中产生的历史记录内容。<br />
+        正常情况系统下会自动滚动存储，无需人工删除。
+        </div>
+        <table class="clsnogrid" style="cursor:auto"> <tr><td>指定日期(包含该日期之前的所有数据都会删除)</td><td>
+    <input type="text" style="max-width:7.5em" maxlength="10" value="" id="idhdDate" onclick=" fPopCalendar(event, this, this);" onfocus="this.select()" readonly="readonly" /><label><input type="checkbox" id="idhdAlm" />删历史报警</label>&nbsp;<label><input type="checkbox" id="idhdVar" />删历史数据</label></td>
+    <td><button onclick="fHisDelBtn();"><table class="clsnogrid"> <tr><td><span class="ui-icon ui-icon-closethick"></span></td><td>执行删除</td></tr> </table></button></td></tr></table>
+        </fieldset>
+</div>
+</div>
+</div>
+    <div id="idHisEditor" title="历史页面编辑器">
+        <table width="100%"  style="vertical-align:top"><tr><td width="40%" style="vertical-align:top"><div id="idheVarList" style=""></div></td>
+            <td style="vertical-align:top"><div id="idheMain"></div></td></tr>
+        <tr><td colspan="2"><b>当前加入的历史变量</b><div id="idheUsedVar" style="max-height:200px;"></div></td></tr></table>
+    </div>
+    <div id="idHisVarItemEditor" title="历史页面--变量属性"></div>
+    <div id="idSTabItemEditor" title="子表格编辑器" style="max-height:400px;overflow:scroll"></div>
+    <script>
+        fManageCreateDlg();
+        document.write(getDateDiv());
+    </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="renderer" content="webkit" />
+    <title>有线网/WIFI远程编辑设置 -- <#GRM_ID></title>
+    <link href="/jui/jquery-ui.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="mycss.css" />
+    <style>
+.clsPH{}
+.clsPS{}
+button{font-size:large;color:#0000A0}
+.container {
+	width:90%;
+	max-width:960px;
+	min-width:320px;
+	margin: 0 auto;
+	background-color:#EEE;
+}
+ul, ol, dl, form {
+padding: 0;
+margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+margin-top: 0;
+padding-right: 15px;
+padding-left: 15px;
+}
+
+.smain {
+font-family: Arial, Helvetica, sans-serif;
+background-color: #EEE;
+}
+
+.container {
+width: 100%;
+max-width: 720px;
+min-width: 320px;
+margin: 0 auto;
+}
+
+.logbox {
+background-color: #CCC;
+}
+
+.seditsize {
+width: 60%;
+max-width: 480px;
+}
+
+.sbtnsize {
+font-size: large;
+}
+
+.stitle {
+text-align: center;
+font-size: x-large;
+background-color: #9CF;
+margin-top: 5px;
+}
+
+.sinp {
+background-color: #CCC;
+}
+
+td {
+}
+
+td.rt {
+text-align: right;
+}
+
+td.rtl {
+text-align: right;
+}
+
+little {
+}
+
+.clsedbtn {
+font-size: large;
+}
+
+table.clswifitab {
+border-style: solid;
+border-width: 1px;
+border-collapse: collapse;
+border-color: #555;
+}
+
+table.clswifitab td {
+border-style: solid;
+border-width: 1px;
+border-collapse: collapse;
+border-color: #555;
+}
+
+#idcurridx {
+color: #900;
+font-weight: bold;
+}
+
+#wificonninfo, #net1conninfo, #net2conninfo {
+color: #900;
+}
+</style>
+    <script>
+if (typeof JSON !== 'object') {
+    document.write("<script src=\"json2.js\" />");
+}
+var g_isoldie = 0;
+</script>
+<!--[if lte IE 8]>
+<script>g_isoldie=1;</script>
+<![endif]-->
+<script src="/jui/jquery.js"></script>
+<script src="/jui/jquery-ui.js"></script>
+
+    <script language="javascript">
+        var GRM = {
+            id: '50999999981', name: 'GRM502设备1', sid: '4E63EA30C14220F7', cmt: '设备描述信息...', img: 'DefImg.gif', SP: '', grmt: 'GRM503-N2L', home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 5,
+            tmP: '2015-04-30,12:20:51.748', tmA: '2015-04-30,12:20:48.861', tmL: '2015-04-30,12:19:12.999', st: 3, cols: 2, mob: 1, x_ip: 0, x_d: 0, x_den: 1, x_dip: 1
+        };
+        function GEBI(a) {
+            return document.getElementById(a);
+        }
+        function msgbox(a) {
+            window.alert(a);
+        }
+        String.prototype.trim=function() {  
+            return this.replace(/(^\s*)|(\s*$)/g,'');  
+        };  
+        //<#PARAM1>
+        //<#PARAM2>
+
+        GRM.x_devd = GRM.grmt.length > 0;
+        function tmnum2str(itm) {
+            var vx = new Date(itm);
+            vx.setTime(itm);
+            return vx.format("yyyy-MM-dd,hh:mm:ss.zzz");
+        }
+
+
+        function fBodyLoad() {
+            $("#btn_datapage").button({
+                icons: {
+                    primary: "ui-icon-arrowreturnthick-1-w"
+                }
+            });
+            $("#btn_managepage").button({
+                icons: {
+                    primary: "ui-icon-arrowreturnthick-1-w"
+                }
+            });
+            $("#btn_lanrefresh").button({
+                icons: {
+                    primary: "ui-icon-refresh"
+                }
+            });
+            $("#btn_lanpost").button({
+                icons: {
+                    primary: "ui-icon-check"
+                }
+            });
+            fBeginGet(false);
+        }
+        var g_GetState = 0;
+        function fBeginGet(isForce) {
+            GI("idAll").style.display = "none";
+            GI("idX").style.display = "block";
+            var ret = fGetAJ(isForce);
+            if (ret) {
+                //OK
+                fOnGetOK(ret)
+            }
+            else {
+                setTimeout(fNextGet, 2000);
+                g_GetState = 1;
+            }
+        }
+        function fNextGet() {
+            var ret = fGetAJ(false);
+            if (ret) {
+                //OK
+                fOnGetOK(ret)
+            }
+            else {
+                setTimeout(fNextGet, 2000);
+                g_GetState = 1;
+            }
+        }
+        function fOnGetOK(ss) {
+            ParseDynInfo(ss);
+         //   if (isinit) {
+                fInit();
+         //   }
+            g_INIT = 0;
+            //刷新动态内容
+            fRefreshDynJS();
+            g_GetState = 2;
+            GI("idAll").style.display = "block";
+            GI("idX").style.display = "none";
+        }
+        var aj;
+        function fGetAJ(isforce) {
+            if (!aj) {
+                aj = CreateHttp();
+            }
+            var url = "/lancfgaj?SID=" + GRM.sid + "&RND=" + Math.floor(100000 * Math.random());
+            if (isforce) {
+                url += "&FORCE=1";
+                g_INIT = 1;
+            }
+            aj.open("GET",url , false);
+            try {
+                aj.send("");
+                var ret = "";
+                if (aj.status == 200) {
+                    ret = aj.responseText.trim();
+                    if (ret == "ERROR") {
+                        return "";
+                    }
+                    return ret;
+                }
+            } catch (e) {
+            }
+            return "";
+        }
+        //
+        function fbtn_datapage() {
+            window.location.href = '/ni?SID=' + GRM.sid + '&RN=' + GRM.rn;
+        }
+        function fbtn_manpage() {
+            window.location.href = '/nimanage?SID=' + GRM.sid + '&RN=' + GRM.rn;
+        }
+        function fbtn_lanrefresh() {
+            fBeginGet(true);
+        }
+        function fbtn_lanpost() {
+            //注意：不要改变参数顺序
+            var xmlhttp = CreateHttp();
+            var i, stext = "";
+            if (g_Inf.HasWIFI) {
+                if (!fWifiSave())
+                    return;
+            }
+            if (!fNetSave()) {
+                return;
+            }
+            if (!confirm("是否确认提交修改?\n提交后模块会自动重启，请耐心等待..."))
+                return;
+            xmlhttp.open("POST", "/lancfgaj?SID=" + GRM.sid + '&RN=' + GRM.rn, false);
+            try {
+                stext = DynInfoToPost();
+                xmlhttp.send(stext);
+            } catch (e) {
+                window.alert("网络故障！"+e);
+                return;
+            }
+            if(xmlhttp.responseText.trim()=="OK"){
+                alert("修改成功！");
+            }
+            else{
+                alert("修改失败");
+            }
+        }
+    </script>
+    <script src="/lanwebjs.js"></script>   
+</head>
+<body class="smain"  onload="fBodyLoad();" style="background-image:url(/nimanage_bg.png); background-repeat:repeat;">
+    <div class="container">
+        <div class="stitle" style="padding:5px">有线网/WIFI远程编辑设置--<#GRM_ID><br />
+<button id="btn_datapage" style="font-size:65%" onclick="fbtn_datapage()">返回数据页面</button> 
+<button id="btn_managepage" style="font-size:65%" onclick="fbtn_manpage()">返回设备管理</button> 
+<button id="btn_lanrefresh" style="font-size:65%" onclick="fbtn_lanrefresh()">刷新数据</button> 
+    </div>
+    <p style="font-size:3px">&nbsp;</p>
+        <div class="logbox">
+            <div id="idX"><span style="color:#800000;font-size:large" id="idWait">正在读取，请等待 ----></span></div>     
+    </div>
+        <div id="idAll" style="display:none">
+            <!--NET1-->
+            <div class="logbox" id="NET1">
+                <div class="stitle" id="NET1NAME">NET1 </div>
+                <table width="100%">
+                    <tr>
+                        <td class="rtl">&nbsp;</td>
+                        <td class="little"><label><input type="checkbox" name="autoip1" id="autoip1" value="1" onClick="fEnable();"><span id="ssaip1">AUTOIP</span></label></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssip1">IP</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="ip1" id="ip1" value="192.168.1.2" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssmask1">Subnet mask</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="mask1" id="mask1" value="255.255.255.0" maxlength="15"></td>
+                    </tr>
+
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssgate1">Gateway</span> </td>
+                        <td width="65%"><input class="seditsize" type="text" name="gate1" id="gate1" value="192.168.1.1" maxlength="15"></td>
+                    </tr>
+
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssdns1">DNS</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="dns1" id="dns1" value="192.168.1.1" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssnet1conn"></span></td>
+                        <td width="65%"><span id="net1conninfo"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--NET2-->
+            <div class="logbox" id="NET2" style="display:none">
+                <div class="stitle" id="NET2NAME">NET2 </div>
+                <table width="100%">
+                    <tr>
+                        <td class="rtl">&nbsp;</td>
+                        <td class="little"><label><input type="checkbox" name="autoip2" id="autoip2" value="1" onClick="fEnable();"><span id="ssaip2">AUTOIP</span></label></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssip2">IP</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="ip2" id="ip2" value="192.168.2.2" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssmask2">Subnet mask</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="mask2" id="mask2" value="255.255.255.0" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssgate2">Gateway</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="gate2" id="gate2" value="192.168.1.1" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssdns2">DNS</span></td>
+                        <td width="65%"><input class="seditsize" type="text" name="dns2" id="dns2" value="192.168.2.1" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssnet2conn"></span></td>
+                        <td width="65%"><span id="net2conninfo"></span>&nbsp;&nbsp;<span id="net2_lan1_conninfo"></span>&nbsp;&nbsp;<span id="net2_lan2_conninfo"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--WIFI-->
+            <div class="logbox" id="NETWIFI" style="display:none">
+                <div class="stitle" id="NETWIFINAME">WIFI</div>
+                <fieldset style="margin:0 auto;width:80%;">
+                    <table class="xxclswifitab" width="100%">
+                        <tr>
+                            <script>
+                                (function () {
+                                    for (var i = 0; i < 5; i++) {
+                                        DR('<td width="20%"> ');
+                                        DR('<input type="radio" id="idcfgW' + i + '" onclick="fWifiEdit(' + i + ');" name="nmcfgW">');
+                                        DR('<label for="idcfgW' + i + '" id="sswcfg' + i + '">配置' + (i + 1) + '</label></td>')
+                                    }
+                                })();
+                            </script>
+                        </tr>
+                    </table>
+                </fieldset>
+                <table id="idWifiALL" width="100%">
+                    <tr>
+                        <td width="35%" class="rt"><span id="sscurreditW">当前编辑</span> </td>
+                        <td width="65%"><span id="idcurridx">配置X </span> &nbsp;&nbsp;&nbsp;&nbsp; </td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssnameW">WIFI路由器名称</span> </td>
+                        <td width="65%"><input class="seditsize" type="text" id="nameW" value="" maxlength="31"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="sspassW">WIFI密码</span> </td>
+                        <td width="65%"><input class="seditsize" type="password" id="passW" value="" maxlength="31"></td>
+                    </tr>
+                    <tr>
+                        <td class="rtl">&nbsp;</td>
+                        <td class="little"><label><input type="checkbox" id="autoipW" onClick="fEnable();"><span id="ssaipW">AUTOIP</span></label></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssipW">IP</span> </td>
+                        <td width="65%"><input class="seditsize" type="text" id="ipW" value="192.168.3.2" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssmaskW">Subnet mask</span></td>
+                        <td width="65%"><input class="seditsize" type="text" id="maskW" value="255.255.255.0" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssgateW">Gateway</span></td>
+                        <td width="65%"><input class="seditsize" type="text" id="gateW" value="192.168.3.1" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="ssdnsW">DNS </span></td>
+                        <td width="65%"><input class="seditsize" type="text" id="dnsW" value="192.168.3.1" maxlength="15"></td>
+                    </tr>
+                    <tr>
+                        <td width="35%" class="rt"><span id="sswificonn"></span></td>
+                        <td width="65%"><span id="wificonninfo"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <fieldset id="idNetXchgAll">
+                <legend id="idNetXchgT"></legend>
+                <label><input type="radio" name="nmNetXchg" id="idXchg0"><span id="idXchg0T"></span></label><br />
+                <label><input type="radio" name="nmNetXchg" id="idXchg1"><span id="idXchg1T"></span></label>
+            </fieldset>
+            <div class="stitle" style="font-size:large;color:#900">
+            <span id="idconntext"  style="margin:0 6px"></span>
+<button id="btn_lanpost" style="font-size:90%" onclick="fbtn_lanpost()">提交修改</button> <div id="idNotChange" style="background-color:#CCC"></div></div>
+        </div>
+    </div>
+    <br />
+</body>
+</html>

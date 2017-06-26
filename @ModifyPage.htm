@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html><head><meta charset="UTF-8" />
+<!--[if lt IE 9]> <script type="text/javascript" src="PIE_IE678.js"></script> <![endif]-->
+<!--[if IE 9]> <script type="text/javascript" src="PIE_IE9.js"></script> <![endif]-->
+<title><#GRM_NAME></title>
+<link rel="stylesheet" type="text/css" href="mycss.css" />
+<script src="myjs.js"></script>
+<style>
+    label {
+        display: block;
+        margin:6px 0;
+        padding: 4px;
+    }
+    label:hover {
+        text-decoration: underline;
+    }
+</style>
+<script type="text/javascript">
+    var GRM = {
+        id: '20001000005', sid: 'BA33556EA4E62BBF', cmt: '天津商业大学XX楼XX冷库', img: '200010000055999.png', SP: 'B', home: '127.0.0.1:7250', pr: 2, pg: 0, rn: 14,
+        tmP: '2015-01-28,16:45:27.307', tmA: '2015-01-28,16:45:22.299', tmL: '2015-01-28,15:46:55.428', st: 3, cols: 1, mob: 0
+    };
+    var editV = { n: '数字可读写HEX', c: '', u: '', w: 2, t: 3, st: 4, v: 100,  mt: [{v:-10,s:"aa"},{v:10,s:"bb"}]  };
+    var ajcount = 0;
+    var xmlhttp;
+    var divMsg;
+    //<#param1>
+    //<#param2>
+    var diskey13 = false;
+    var g_MT = [];
+    var g_MTIdx=0;
+function EnterPress(e) { //传入 event 
+    if (g_edMode != "F") return;
+    var e = e || window.event;
+    if (e.keyCode == 13) {
+        if (diskey13) return;
+        diskey13 = true;
+        fOnBtnClick();
+    }
+    else {
+        if (divMsg) {
+            if (divMsg.style.display == "block")
+                divMsg.style.display = "none";
+            diskey13 = false;
+        }
+    }
+}  
+    var g_edMode;
+    if (editV.t == 1) { g_edMode = "B"; }
+    else if (editV.t == 6) { g_edMode = "M"; }
+    else g_edMode = "F";
+function fBodyLoad() {
+    xmlhttp = CreateHttp();
+    divMsg = document.getElementById("idMsg");
+    fUpdateFooter();
+    FillTab();
+}
+function ShowMsg(s)
+{
+    divMsg.innerHTML = s;
+    divMsg.style.display = "block";
+    alert(s);
+}
+function SendNetReq(val)
+{
+    var i;
+    if(g_edMode=="F"){
+        document.getElementById("idInpNumBtn").disabled = true;
+        document.getElementById("idInpNum").disabled = true;
+    }
+    else if (g_edMode == "B") {
+        document.getElementById("idInpB0").disabled = true;
+        document.getElementById("idInpB1").disabled = true;
+    }
+    else if (g_edMode == "M") {
+        for (i = 0; i < g_MT.length; i++)
+            g_MT[i].disabled = true;
+    }
+    var src = '/modify?SID=' + GRM.sid + '&N=' +VN + '&PG=' + GRM.pg + '&RN=' + GRM.rn;
+    xmlhttp.open("POST",src, false);
+    try{
+        xmlhttp.send(String(val));
+        var ret = xmlhttp.responseText.trim();
+        if (ret == "OK") {
+            if (g_edMode == "F") {
+                document.getElementById("idInpNumBtn").disabled = false;
+                document.getElementById("idInpNum").disabled = false;
+                document.getElementById("idInpNum").focus();
+            }
+            else if (g_edMode == "B") {
+                document.getElementById("idInpB0").disabled = false;
+                document.getElementById("idInpB1").disabled = false;
+            }
+            else if (g_edMode == "M") {
+                for (i = 0; i < g_MT.length; i++)
+                    g_MT[i].disabled = false;
+            }
+            editV.v =parseFloat(val);
+            FillTab();
+            var myDate = new Date();
+            divMsg.innerHTML = "写入成功！<br>写入操作时间:" + myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
+            divMsg.style.display = "block";
+            if (document.getElementById("idInpAutoRet").checked) {
+                window.location.href = "ni?SID=" + GRM.sid + "&PG=" + GRM.pg + "&RN=" + GRM.rn + "&_rnd=" + Math.random();
+            }
+        }
+        else {
+            ShowMsg("网络错误，无法完成写入!");
+        }
+    }catch(e){
+        ShowMsg("网络错误，无法完成写入!");
+    }
+    return true;
+}
+function fCheckRange(ss,v)
+{
+    if (!isNaN(v.vmax))
+        if(ss>v.vmax){
+            ShowMsg("数值不可大于最大值！");
+            return false;
+        }
+    if (!isNaN(v.vmin))
+        if (ss < v.vmin){
+            ShowMsg("数值不可小于最小值！");
+            return false;
+        }
+    return true;
+}
+function fOnBtnClick()
+{
+    var ret = NaN;
+    var sv = document.getElementById("idInpNum").value;
+    if (editV.it == 2) {
+        if(editV.t==3)
+            ret = parseInt(sv);
+        else
+            ret = parseInt(sv, 10);
+        if (sv.indexOf(".") >= 0)
+            ret = NaN;
+        if(isNaN(ret))
+        {
+            ShowMsg("输入错误！必须是整数,且不可含有小数点");
+            return false;
+        }
+        if (!fCheckRange(ret, editV))
+            return false;
+        return SendNetReq(ret);
+    }
+    else if (editV.it == 3) {
+        ret = parseFloat(sv);
+        if (isNaN(ret)) {
+            ShowMsg("输入错误！必须是浮点数");
+            return false;
+        }
+        if (!fCheckRange(ret, editV))
+            return false;
+        return SendNetReq(ret);
+    }
+    else return false;
+}
+function fInpB(vv) {
+    if (!vv.checked) return false;
+    var valbool = !!editV.v;
+    vv = document.getElementById("idInpB1").checked;
+    //if (vv != editV.v)
+    {
+        var bv = vv ? editV.s1 : editV.s0;
+        if (editV.s1 == editV.s0)
+            bv += " (" + (vv + 0) + ")";
+        if (!myyes('是否确认写入: ' + bv)) {
+            if (vv) {
+                document.getElementById("idInpB0").checked = true;
+            }
+            else {
+                document.getElementById("idInpB1").checked = true;
+            }
+            return false;
+        }
+        return SendNetReq((vv+0)+'');
+    }
+}
+function myyes(s){
+    if(!GRM.mob)
+        return true;
+    if (GRM.xmob)
+        return true;
+    return confirm(s);
+}
+function fInpM(vv,idx) {
+    if (!vv.checked) return false;
+//    if (idx == g_MTIdx) return false;
+    if (!myyes('是否确认写入: ' + editV.mt[idx].s)) {
+        g_MT[g_MTIdx].checked = true;
+        return false;
+    }
+    return SendNetReq(editV.mt[idx].v);
+}
+function FillTab()
+{
+    var i;
+    if (editV.it == 1) {
+        if (editV.s0 == "") editV.s0 = "0";
+        if (editV.s1 == "") editV.s1 = "1";
+    }
+    document.getElementById("idVName").innerHTML = fConvName(editV.n);
+    if (editV.c)
+        document.getElementById("idVCmt").innerHTML = editV.c;
+    document.getElementById("idVVal").innerHTML = fVarValToHtml(editV);
+    if (VarHasRange(editV))
+        document.getElementById("idVRange").innerHTML = GetRangeStr(editV);
+    var sedit = "";
+    if(g_edMode=="F"){
+        sedit = '<input type="text" id="idInpNum" value="" style="xx-font-size:large;'+(GRM.xmob?'width:8em;':'')+'" onkeypress="EnterPress(event)" onkeydown="EnterPress()" >' +
+            '<input type="button" value="&nbsp;确认&nbsp;" id="idInpNumBtn" style="xx-font-size:large" onclick="return fOnBtnClick();">';
+    }
+    else if (g_edMode == "B") {
+        var B0Check = "", B1Check = "";
+        if (editV.v) B1Check = " checked"; else B0Check = " checked";
+        sedit = '<label><input type="radio" id="idInpB0" value="0" name="InpB" onclick="return fInpB(this);"' + B0Check + ' >'
+            + fVarValToHtml(editV, 0) + '</label><label><input type="radio"  name="InpB" id="idInpB1" value=1" onclick="return fInpB(this);"' + B1Check + ' >' + fVarValToHtml(editV, 1) + '</label>';
+    }
+    else if (g_edMode == "M") {
+        var si;
+        g_MTIdx= fVarToMTIdx(editV, editV.v);
+        for (i = 0; i < editV.mt.length; i++) {
+            si = '<label><input type="radio" id="idInpM' + i + '" value="' + editV.mt[i].v + '" name="InpM" onclick="return fInpM(this,'+i+');"';
+            if (i == g_MTIdx)
+                si += " checked='checked' ";
+            si+=' >'+ editV.mt[i].s;
+            if(editV.u)
+                si+=' '+editV.u;
+            si += '</label>';
+            sedit += si;
+        }
+    }
+    document.getElementById("idVValNew").innerHTML = sedit;
+    if (g_edMode == "F") {
+        document.getElementById("idInpNum").focus();
+    }
+    else if (g_edMode == "M") {
+        for (i = 0; i < editV.mt.length; i++)
+            g_MT[i] = document.getElementById("idInpM" + i);
+    }
+}
+function VarHasRange(v){
+    if (v.t == 1 || v.t == 6)
+        return false;
+    if (isNaN(v.vmax) && isNaN(v.vmin))
+        return false;
+    return true;
+}
+function GetRangeStr(v){
+    if (!VarHasRange(v)) return "";
+    var ret="";
+    if (!isNaN(v.vmax))
+        ret = "最大值: " + v.vmax;
+    if (!isNaN(v.vmin))
+    {
+        if (ret) ret += "<br>";
+        ret += "最小值: " + v.vmin;
+    }
+    return ret;
+}
+</script> 
+</head>
+<body onload="fBodyLoad();">
+<div id="wrap">
+<div id="main">
+<div class="header">
+
+    <script>
+        (function () {
+            if (GRM.xmob) {
+                DR('<div id="idimg"><img src="/devimg/' + GRM.img + '" /></div>');
+                DR('<table width="100%">');
+                DR('<tr><td><h1>');
+            }
+            else {
+                DR('<table width="100%">');
+                DR('<tr><td width="160px" ><div id="idimg"><img src="/devimg/' + GRM.img + '" /></div></td><td><h1>');
+            }
+
+            DR('<span id="idGrmName">' + GRM.name + '</span><span style="color:#55404a" >(修改变量)</span> ' + ((GRM.xmob) ? '<br>' : '&nbsp;&nbsp;') + '<span style="font-size:70%;">' +
+          '<a style="color:#009;" href="/ni?SID=' + GRM.sid + '&PG=' + GRM.pg + '&RN=' + GRM.rn + '">&nbsp;[返回变量表格页面]&nbsp;</a>' +
+          '<a style="color:#009;" href="/modify?SID=' + GRM.sid + '&N=' + VN + '&PG=' + GRM.pg + '&RN=' + GRM.rn + '">[刷新本页]</a></span>');
+            DR('</h1><p id="idGrmCmt">'+ GRM.cmt+'</p>');
+        })();
+    </script>
+    <div class="mu"><div style="margin-top:0px;margin-bottom:0px; padding:0px">&nbsp;
+        <div class="back" >&nbsp;
+        </div></div></div>
+    <script>DR('</td></tr></table>');</script>
+</div><div class="content">
+    <script>
+        if (GRM.xmob) {
+            DR('<table border="1" align="middle" id="idDevTab" style="">');
+        }
+        else {
+            DR('<table border="1" align="middle" id="idDevTab" style="min-width:600px;">');
+        }
+    </script>
+              <tr><th>变量名</th><td id="idVName" class="vnm" style="width:70%"></td></tr>
+              <script>
+                  if (editV.c) DR('<tr><th>变量描述</th><td id="idVCmt" class="vcmt"></td></tr>');
+              </script>
+              <tr><th>变量当前值</th><td id="idVVal" class="vv"></td></tr>
+              <script>
+                  if (VarHasRange(editV)) DR('<tr><th>取值范围</th><td id="idVRange" class="vcmt"></td></tr>');
+              </script>
+              <tr><th>修改变量</th><td id="idVValNew" class="vv"></td></tr>
+              <tr><td colspan="2" style="text-align:center"><label><input type="checkbox" id="idInpAutoRet" checked>修改变量成功后自动返回</label></td></tr>
+              <tr><td colspan="2"><div style="border-style:dashed;border-width:1px; background:#fffc6b; min-height:4em; padding:6px; display:none;" id="idMsg">Msssage!</div></td></tr>
+          </table>
+</div></div></div><div class="clearfix"></div>
+<div class="footer" id="xxfooter">
+    <div style=" min-width: 320px;margin: 0 auto;width:90%;" id="idfooter"></div>
+</div>
+<script>if (GRM.xmob) { GI("xxfooter").style.minHeight = "6em"; }</script>  
+</body></html>

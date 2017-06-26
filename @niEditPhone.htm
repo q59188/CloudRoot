@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="renderer" content="webkit" />
+    <title>远程编辑电话号码 -- <#GRM_ID></title>
+    <link href="/jui/jquery-ui.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="mycss.css" />
+    <style>
+.clsPH{}
+.clsPS{}
+button{font-size:large;color:#0000A0}
+.container {
+	width:90%;
+	max-width:960px;
+	min-width:320px;
+	margin: 0 auto;
+	background-color:#EEE;
+}
+</style>
+<script src="/jui/external/jquery/jquery.js"></script>
+<script src="/jui/jquery-ui.js"></script>
+    <script language="javascript">
+        var GRM = {
+            id: '50999999981', name: 'GRM502设备1', sid: '4E63EA30C14220F7', cmt: '设备描述信息...', img: 'DefImg.gif', SP: '', grmt: 'GRM503-N2L', home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 5,
+            tmP: '2015-04-30,12:20:51.748', tmA: '2015-04-30,12:20:48.861', tmL: '2015-04-30,12:19:12.999', st: 3, cols: 2, mob: 1, x_ip: 0, x_d: 0, x_den: 1, x_dip: 1
+        };
+        function GEBI(a) {
+            return document.getElementById(a);
+        }
+        function msgbox(a) {
+            window.alert(a);
+        }
+        String.prototype.trim=function() {  
+            return this.replace(/(^\s*)|(\s*$)/g,'');  
+        };  
+        //<#PARAM1>
+        //<#PARAM2>
+
+        GRM.x_devd = GRM.grmt.length > 0;
+        Date.prototype.format = function (format) {
+            var o = {
+                "M+": this.getMonth() + 1, // month
+                "d+": this.getDate(), // day
+                "h+": this.getHours(), // hour
+                "m+": this.getMinutes(), // minute
+                "s+": this.getSeconds(), // second
+                "q+": Math.floor((this.getMonth() + 3) / 3)
+            }
+            if (/(y+)/.test(format)) {
+                format = format.replace(RegExp.$1, (this.getFullYear() + "")
+                        .substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(format)) {
+                    format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
+                            : ("00" + o[k]).substr(("" + o[k]).length));
+                }
+            }
+            if (/(zzz)/.test(format)) {
+                format = format.replace("zzz", ("000" + this.getMilliseconds()).substr(3));  // millisecond
+            }
+            return format;
+        }
+        function CreateHttp() {
+            var xmlhttp;
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+            }
+            else {
+                var MSXML = ['MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
+                for (var n = 0; n < MSXML.length; n++) {
+                    try { xmlhttp = new ActiveXObject(MSXML[n]); break; } catch (e) { }
+                }
+            }
+            return xmlhttp;
+        }
+        function tmnum2str(itm) {
+            var vx = new Date(itm);
+            vx.setTime(itm);
+            return vx.format("yyyy-MM-dd,hh:mm:ss.zzz");
+        }
+
+
+        function fBodyLoad() {
+            $("#btn_datapage").button({
+                icons: {
+                    primary: "ui-icon-arrowreturnthick-1-w"
+                }
+            });
+            $("#btn_managepage").button({
+                icons: {
+                    primary: "ui-icon-arrowreturnthick-1-w"
+                }
+            });
+            f1Sec();
+            fGetAJ(false);
+        }
+        var aj;
+        function fGetAJ(isforce) {
+            if (!aj) {
+                aj = CreateHttp();
+            }
+            var url = "/nieditphoneaj?SID=" + GRM.sid + "&RND=" +Math.floor(100000*Math.random());
+            if(isforce)
+                url+="&FORCE=1";
+            aj.open("GET",url , false);
+            try {
+                aj.send("");
+                var ret = "ERROR";
+                if (aj.status == 200) {
+                    ret = aj.responseText.trim();
+                    if (!fMakeUI(ret)){
+                        setTimeout(fGetAJ, 1500, false);
+                    }
+                    return;
+                }
+            } catch (e) {
+            }
+        }
+
+        function fEdit(idx) {
+            var isdis = !GEBI("ED" + idx).checked;
+            var xps= GEBI("PS" + idx),xph=GEBI("PH"+idx),xdis=GEBI("DIS"+idx);
+            if (isdis) {
+                xps.value = "****************".substr(0, g_Phones[idx].PS.length);//写入假的
+            } else {
+                xps.value = g_Phones[idx].PS;
+            }
+            xph.value = g_Phones[idx].PH;
+            xdis.checked = g_Phones[idx].DIS;
+            xps.disabled = isdis;
+            xps.hidden = true;////----
+            xph.disabled = isdis;
+            if (xdis.checked)
+                xph.disabled = true;
+            xdis.disabled = isdis;
+        }
+        function fCheckPhone(s){
+            if(s=="")
+                return true;
+            if(s=="*")
+                return true;
+            if (s.length > 15)
+                return false;
+            if (s.substr(0, 1) == "+") {
+                s = s.substr(1, s.length - 1);//去掉最前面的+
+            }
+            var r = /^[0-9]*$/;　　//整数 
+            return r.test(s);
+        }
+        function fCheckPass(s){
+            if(s=="")return true;
+            var r=/^[a-zA-Z0-9]*$/;
+            return r.test(s);
+        }
+        function fDoEdit() {
+            var edtcnt = 0,i,edts = [],etmp,posts;
+            for(i=0;i<g_Phones.length;i++){
+                if(!GEBI("ED" + i).checked){
+                    continue;
+                }
+                etmp = { ID: g_Phones[i].ID, PH: GEBI("PH" + i).value, PS: GEBI("PS" + i).value, DIS: GEBI("DIS" + i).checked };
+                if (etmp.PH == g_Phones[i].PH && etmp.PS == g_Phones[i].PS && etmp.DIS == g_Phones[i].DIS){
+                    GEBI("ED" + i).checked = false;
+                    fEdit(i);
+                    continue;//没变的不改
+                }
+                if(etmp.DIS)
+                    etmp.PH="*";
+                if (!fCheckPhone(etmp.PH)) {
+                    msgbox("电话号码格式错误！ 用户:" + g_Phones[i].NM);
+                    return;
+                }
+                if(!fCheckPass(etmp.PS)){
+                    msgbox("密码格式错误！只能是数字和字母(大小写)。 用户:" + g_Phones[i].NM);
+                    return;
+                }
+                if(etmp.PS.length>0&&etmp.PS.length<4){
+                    msgbox("密码格式错误！如果设置密码，至少要4位以上。 用户:" + g_Phones[i].NM);
+                    return;
+                }
+                edts.push(etmp);
+            }
+            if (edts.length == 0) {
+                msgbox("没有修改任何内容！");
+                return;
+            }
+            if (edts.length > 13) {
+                msgbox("每次最多只能修改13个！");
+                return;
+            }
+
+            //可以发送了！
+            if (!aj) {
+                aj = CreateHttp();
+            }
+            posts = [];
+            posts.push(edts.length);
+            for (i = 0; i < edts.length; i++) {
+                posts.push(edts[i].ID);
+                posts.push(edts[i].PH);
+                posts.push(edts[i].PS);
+            }
+            var url = "/nieditphoneaj?SID=" + GRM.sid;
+            aj.open("POST", url, false);
+            try {
+                aj.send(posts.join(','));
+                var ret = "ERROR";
+                if (aj.status == 200) {
+                    ret = aj.responseText.trim();
+                    if(ret=="OK"){
+                        fEditDoRefresh();
+                    }
+                    else{
+                        msgbox("网络通讯错误，修改失败！");
+                    }
+                    return;
+                }
+                else {
+                    msgbox("网络故障，修改失败！错误" + aj.status);
+                }
+            }
+            catch (e) {
+                msgbox("网络故障，修改失败！");
+            }
+
+        }
+        var g_tm = "";
+        var g_Phones = [];
+        function fDisChange(i) {
+            var ischk = GEBI("DIS" + i).checked;
+            GEBI("PH" + i).disabled = ischk;
+        }
+        function fMakeUI(str)
+        {
+            var arr = str.split("\r\n");
+            if(arr.length==0)return false;
+            if (arr[0] == "ERROR") {
+                if (arr[1] == "BUSY")
+                    return false;
+                else {
+                    msgbox("模块通讯故障！");
+                    location.href = '/ni?SID=' + GRM.sid + '&RN=' + GRM.rn;
+                    return false;
+                }
+            }
+            g_Phones = [];
+            g_tm = tmnum2str(arr[1]);
+            arr.splice(2, 1);//删除第一个
+            var si="",i = 0,tmp;
+            for (i = 0; i < arr.length - 2; i++) {
+                var ari = arr[i + 2].split(',');
+                tmp = { ID: ari[0], ADM: ari[1], NM: ari[2], PH: ari[3], PS: ari[4] };
+                tmp.DIS = (ari[3] == "*") ? 1 : 0;
+                if (tmp.DIS) tmp.PH = "";
+                g_Phones.push(tmp);
+            }
+            var sret = '<table width="100%" border=1><tr><th width="6%">序号</th><th width="20%">用户名</th><th width="10%">权限</th><th width="24%">电话号码</th><th width="24%">密码</th><th width="6%">禁用</th><th width="10%">修改</th></tr>';
+            for (i = 0; i < g_Phones.length; i++) {
+                tmp = g_Phones[i];
+                si = '<tr><th>' + tmp.ID + '</th><td>' + tmp.NM + '</td><td>' + (tmp.ADM == 1 ? '管理员' : '用户') + '</td>';
+                si += '<td ><input type="text" class="clsPH"  maxlength="15" disabled id="PH' + i + '"/></td><td><input type="text" class="clsPS" disabled  maxlength="14" id="PS' + i + '"></td><td><input type="checkbox" disabled id="DIS' + i + '" onclick="fDisChange('+i+');"></td><td><label> &nbsp;<input type="checkbox"  id="ED' + i + '" onclick="fEdit(' + i + ');" />&nbsp; &nbsp; &nbsp;</label></td>';
+                sret += si+'</tr>';
+            }
+            sret += "<div>电话号码本刷新时间:" + g_tm + " &nbsp; &nbsp; &nbsp; &nbsp;</div><div  style='text-align:right'><button    style='font-size:100%'   onclick='fDoEdit();' id='idbtnedit'>提交修改！</button>&nbsp;&nbsp;<button  style='font-size:100%'  onclick='fDoForceRefresh();'  id='idbtnrefresh'>强制刷新电话号码本！</button></div>";
+            GEBI("idX").innerHTML = sret;
+            for (i = 0; i < g_Phones.length; i++) {
+                fEdit(i);
+            }
+            $("#idbtnedit").button({
+                icons: {
+                    primary: "ui-icon-check"
+                }
+            });
+            $("#idbtnrefresh").button({
+                icons: {
+                    primary: "ui-icon-arrowrefresh-1-s"
+                }
+            });
+            return true;
+        }
+        function fDoForceRefresh()
+        {
+            var edtcnt = 0,i,edts = [],etmp,posts;
+            for (i = 0; i < g_Phones.length; i++) {
+                if (!GEBI("ED" + i).checked) {
+                    continue;
+                }
+                edtcnt++;
+            }
+            if (edtcnt > 0) {
+                if (!confirm("您有" + edtcnt + "行内容正在编辑，没有提交修改，如果强制刷新会丢失编辑内容，是否要刷新?"))
+                    return;
+            }            
+            GEBI("idX").innerHTML = '<span style="color:#800000;font-size:large" id="idWait">启动强制刷新，请等待 --></span>';
+            setTimeout(f1Sec, 1000);
+            fGetAJ(true);
+        }
+        function f1Sec()
+        {
+            var x = GEBI('idWait');
+            if (!x) return;
+            var ss = x.innerHTML;
+            ss = ss.substr(0, ss.length - 4);
+            if (ss.length > 70)
+                ss = ss.substr(0, 14);
+            ss+='-->'
+            x.innerHTML = ss;
+            setTimeout(f1Sec,1000);
+        }
+        function fEditDoRefresh() {
+            GEBI("idX").innerHTML = '<span style="color:#800000;font-size:large" id="idWait">修改电话号码成功，请等待刷新 --></span>';
+            setTimeout(f1Sec, 1000);
+            fGetAJ(false);
+        }
+    </script>
+</head>
+<body class="smain"  onload="fBodyLoad();" style="background-image:url(/nimanage_bg.png); background-repeat:repeat;">
+    <div class="container">
+        <div class="stitle" style="padding:5px">远程编辑电话号码--<#grm_id>
+    <script>
+        document.write('<button id="btn_datapage"  style="font-size:65%"  onclick="window.location.href = \'/ni?SID=' + GRM.sid + '&RN=' + GRM.rn + '\'">返回数据页面</button> ');
+        document.write('<button id="btn_managepage"  style="font-size:65%"  onclick="window.location.href = \'/nimanage?SID=' + GRM.sid + '&RN=' + GRM.rn + '\'">返回设备管理</button>&nbsp;');
+    </script>
+    </div>
+    <p style="font-size:3px">&nbsp;</p>
+        <div class="logbox">
+            <div id="idX"><span style="color:#800000;font-size:large" id="idWait">正在读取电话号码，请等待 --></span></div>     
+    </div>
+    </div>
+</body>
+</html>

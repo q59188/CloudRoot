@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>GRM设备管理</title>
+    <style>
+        b {
+            color: #009;
+        }
+        ul, ol, dl, form {
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+.smain {
+	font-family:Arial, Helvetica, sans-serif;
+	background-color:#EEE;
+}
+.container {
+	width:90%;
+	max-width:720px;
+	min-width:320px;
+	margin: 0 auto;
+}
+.stitle {
+	text-align:center;
+	font-size:150%;
+	background-color:#9CF;
+}
+.sinp {
+	background-color:#EEE;
+}
+table {
+	border-collapse:collapse;
+	border-color:#000;
+}
+tr {
+	border-color:#000;
+}
+td {
+	border-color:#333;
+}
+td.rt {
+	text-align:right;
+}
+ul {
+	margin:0;
+	list-style-position:inside;
+	font-size:75%;
+	color:#333;
+	background-color:#CCC;
+}
+button{
+    font-size:large;
+}
+.logbox{
+    max-width:800px;
+}
+</style>
+    <script src="myjs.js"></script>  
+    <script src="SysViewJS.js"></script>
+    <script>
+            
+        //var g_WebGrpInfo=[{name:'datai',dev:[]}];
+        var g_WebGrpInv={};
+        var lgcm = [];
+        var lgcmhash = {};
+
+        //<#PARAM1>
+
+        var LARGECUST_LEVEL = 5;
+        function freloadx() {
+            var vx = location.href;
+            var idx = vx.indexOf("&RAND=", 0);
+            if (idx != -1) {
+                vx = vx.substr(0, idx);//has RAND
+            }
+            vx += "&RAND=" + Math.ceil(Math.random() * 10000);
+            location.href = vx;
+        }
+        var g_pass;
+        function fonload1(){
+            var arr = g_infostr.split('|');
+            arr = arr.join('<br>\n');
+            arr = arr.replace('[ServerInfo]', '<b>服务器全局信息</b>');
+            arr = arr.replace('[Group]', '<b>Group信息</b>');
+            arr = arr.replace('[GRM-Device]', '<b>GRM设备信息</b>');
+            arr = arr.replace('"', '');
+            arr = arr.replace('"', '');
+            var url = window.location.href;
+            g_pass = url.substring(url.lastIndexOf('P=') + 2, url.length);//
+            GEBI('idTx').innerHTML = arr;
+            GI('idFWGRM').value = g_GRM.GRM;
+        }
+        function fCheckUpload() {
+            if (GI('idManPass').value == '') {
+                alert("不可以没有管理密码");
+                return false;
+            }
+            return true;
+        }
+ 
+    </script>
+</head>
+
+<body style="font-size:120%" onload="fonload1();">
+    <div class="logbox">
+            <h1 class="stitle">Grm设备管理 <button onclick="freloadx()">刷新页面</button></h1>
+    <div id="idTx">
+        内容加载中...
+    </div>
+        </div>
+
+    <table style="border-style:none;">
+        <tr><td><button onclick=" fForceDelGroup();">强制注销设备连接</button></td>
+        <td><button onclick=" fForceActive(1);">强制激活</button></td>
+        <td><button onclick=" fForceActive(0);">取消强制激活</button></td>
+        </tr>
+    </table>
+    <div style="max-width:600px">
+<form  action="/sysdevfw" method="post" enctype="multipart/form-data" onsubmit="return fCheckUpload()">
+    <div id="idFW" style="margin:5px 0px 5px 1px">
+     <input style="font-size:100%" type="submit" value="升级固件"><input type="file" id="idFWFILE" title="选择固件文件..." name="F" style="font-size: 100%;width:16em;border-style:solid;border-width:1px;border-color:#000;" accept=".sfw,.grmfw">
+    <input type="hidden" name="GRM" id="idFWGRM" />
+        </div>
+          <div colspan="3">管理密码:<input type="password" id="idManPass" name="MANP" maxlength="16"/></div>
+            </form>
+    </div>
+    <div id="idJSTM"></div>
+    <script>
+        GI('idFWGRM').value = g_GRM.GRM;
+    </script>
+</body>
+</html>

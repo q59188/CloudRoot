@@ -1,0 +1,103 @@
+html,body { width:100%;height:98%; padding:0;margin: 0 auto;}
+body {font: 100%/1.4  Arial,'Times New Roman',ËÎÌו,Verdana, sans-serif, Verdana;}
+h1{font-size:150%;}
+#main  {height: auto; min-height:78%;}
+.footer {position: relative;
+height: 3em;
+min-height:3em;
+background: #CCC49F;
+padding:4px 7px 4px 7px;
+clear:both; 
+}
+.clearfix:after {content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;}
+.clearfix {display: inline-block;}
+thead b {color:#006;}
+a{text-decoration:none; color:#3344FF;}
+a:hover{text-decoration:underline;}
+h1,h2,h3,h4,h5,h6,dl,dt,dd,p,ul,form,img{padding:0;margin:0;}
+.header{padding:0;margin:0;}
+ul, ol, li{list-style: none outside none;}
+.header td{ vertical-align:top; text-align:left;}
+.mu .back{height:6px; background-color:#2c94c8;clear:both;}
+.mu ul{min-height:30px; vertical-align:bottom;}
+.mu ul a{display:block;text-decoration: none; color:#ff0;}
+.mu ul  a:hover{color:#ff9900;}
+.mu ul li{ height:25px; line-height:25px; color:#FFFFFF; float:left; margin:8px 7px 0px 3px; font-size:14px; text-align:center; cursor:pointer;
+padding:0px 2px 0px 2px; min-width:50px;overflow:visible;    -webkit-border-radius:5px 5px 0 0; 
+   -moz-border-radius: 5px 5px 0 0; border-radius:5px 5px 0 0;
+    background: #2c94c8;
+    -pie-background: linear-gradient(0deg,#1084a8,#30c8d0); 
+    background:-webkit-linear-gradient(90deg,#1084a8,#30c8d0);
+    background:linear-gradient(0deg,#1084a8,#30c8d0);
+}
+.mu ul li:hover{ 
+    background:#30a8d0;
+    -pie-background:linear-gradient(0deg,#30c8d0,#1084a8); 
+    background:-webkit-linear-gradient(90deg,#30c8d0,#1084a8);
+    background:linear-gradient(0deg,#30c8d0,#1084a8);
+}
+.mu ul .sel{ height:32px;line-height:32px; font-size:16px; color:#ff7e00; border:1px solid #ff7e00; border-bottom:0;margin-top:0px;
+    -webkit-border-radius:8px 8px 0 0; -moz-border-radius: 8px 8px 0 0; border-radius:8px 8px 0 0; 
+    background:#FFFFFF; 
+    -pie-background: linear-gradient(0deg,#d0eed0,#FFFFFF);
+    background:-webkit-linear-gradient(90deg,#d0eed0,#FFFFFF);
+    background:linear-gradient(0deg,#d0eed0,#FFFFFF);
+}
+.mu ul .sel:hover {
+    background:#d0eed0;
+    -pie-background: linear-gradient(0deg,#f0f0f0,#c0dec0); 
+    background:-webkit-linear-gradient(90deg,#f0f0f0,#c0dec0);
+    background:linear-gradient(0deg,#f0f0f0,#c0dec0);
+}
+.mu ul .sel a{color:#ff7e00;}
+
+table{border-color:#000;border-collapse:collapse;margin:0 auto;}
+th{border-collapse:collapse;text-align:center;color:#006;border-color:#999;padding:1px 5px 1px 5px;}
+td{border-collapse:collapse;text-align:left;border-color:#999;padding:1px 5px 1px 5px;}
+table S{text-decoration:none;color:#F80;padding-left:0.5em;	padding-right:0.5em;}
+.content {padding: 5px;text-align:left;}
+.smain {font-family: Arial, Helvetica, sans-serif;background-color: #EEE;}
+.container {width: 90%;max-width:800px;min-width: 320px;margin: 0 auto;}
+.seditsize {max-width: 480px;font-size: 100%;}
+.sbtnsize {font-size: 100%;font-weight: bold;color: #0000A0;}
+.stitle {text-align: center;font-size: 150%;background-color: #9CF; }
+.sinp {background-color: #EEE;}
+
+td.dx:hover{background-color:#5CF;}
+td.dx a{display: block;width: 100%;x-text-decoration:underline;font: 100%/1.4  ËÎÌו,Arial,'Times New Roman',Verdana, sans-serif, Verdana;}
+.content table{background-color:#DAF4FF;margin-bottom:5px;}
+.content thead{background:#77E7DF;}
+.hm{color:#F00;font-weight:bold;}
+.lm{color:#E0F;font-weight:bold;}
+.vcmt{color:#660;}
+.vnm{color:#800;x-font-weight:bold;}
+.vv{color:#55404a;font: 100%/1.4  ËÎÌו,Arial,'Times New Roman',Verdana, sans-serif, Verdana;}
+#idGrmName {color:#33F;font-weight:bold;}
+#idGrmCmt{color:#800;font-weight:bold;}
+
+.clsSubTabHdr{
+border-style:solid;
+border-width:1px;
+-moz-border-radius:18px 18px 0 0;
+-webkit-border-radius:18px 18px 0 0;
+border-radius:18px 18px 0 0;
+text-align:center;
+border-color:#808080;
+background:#f8c060;
+width:98%;
+padding:2px;
+margin:3px;
+}
+.clsSubTabText{
+color:darkblue;
+font-size:120%;
+font-weight:bold;
+}
+.clsATop{
+vertical-align:top;
+}
+table.clsVarTab{background-color:#DAF4FF;margin-bottom:5px;min-width:22em}

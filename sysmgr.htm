@@ -1,0 +1,399 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title> Net Insight 管理系统 </title>
+<style>
+
+ul, ol, dl, form {
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;	 
+	padding-right: 15px;
+	padding-left: 15px; 
+}
+.smain {
+	font-family:Arial, Helvetica, sans-serif;
+	background-color:#EEE;
+}
+.container {
+	width:80%;
+	max-width:720px;
+	min-width:320px;
+	margin: 0 auto;
+}
+.logbox {
+	font-size:150%;
+	background-color:#CCC;
+}
+.seditsize {
+	width:60%;
+	max-width:480px;
+	font-size:100%
+}
+.sbtnsize {
+	font-size:100%
+}
+.stitle {
+	text-align:center;
+	font-size:150%;
+	background-color:#9CF;
+}
+.sinp {
+	background-color:#CCC;
+}
+td{font-size:large;}
+td.rt {
+	text-align:right;
+	font-size:100%;
+}
+td.rtl{
+	text-align:right;
+	font-size:80%;
+}
+little{
+	font-size:70%;
+}
+ul {
+	margin:0;
+	list-style-position:inside;
+	font-size:75%;
+	color:#333;
+	background-color:#CCC;
+}
+.footer {
+	font-size:80%;
+	text-align:right;
+	background-color:#EEE;
+}
+textarea{
+    width:15em;
+    height:6em;
+    font-size:large;
+    font-family:'Courier New';
+}
+.textref {
+    font-size: large;
+    font-family: 'Courier New';
+    padding-left:3px;
+}
+pre {
+    font-size: medium;
+    text-align:left;
+}
+b{
+    color:#0A0;
+}
+i{
+    font-style:normal;
+    color:#A00;
+}
+</style>
+<script>
+    function GEBI(a) {
+        return document.getElementById(a);
+    }
+    function msgbox(a) {
+        window.alert(a);
+    }
+    function trim(str) { 
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+    function CheckGRMID(s) {
+        var sok, i, chi, dig = [], x10;
+        if (s.length != 11) {
+            return false;
+        }
+        for (i = 0; i < 11; i++) {
+            chi = s.charAt(i);
+            if (chi > '9' || chi < '0')
+                return false;
+            dig[i] = +chi;
+        }
+        x10 = dig[0] + dig[3] + dig[6] + dig[9];
+        x10 += (dig[1] + dig[4] + dig[7]) * 2;
+        x10 += (dig[2] + dig[5] + dig[8]) * 3;
+        x10 = x10 % 10;
+        x10 = 9 - x10;
+        dig[10] = x10;
+        sok=dig.join('');
+        return sok === s;
+    }
+    function CreateHttp() {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            var MSXML = ['MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
+            for (var n = 0; n < MSXML.length; n++) {
+                try { xmlhttp = new ActiveXObject(MSXML[n]); break; } catch (e) { }
+            }
+        }
+        return xmlhttp;
+    }
+    function fMakeOtherInp() {
+        function fStr(xname) {
+            var x_X = trim(GEBI("id" + xname).value);
+            return (x_X) ? xname +"="+ x_X + "&" : "";            
+        }
+        function fCheck(xname) {
+	    if(!GEBI(xname + "x"))return "";
+            if (GEBI(xname + "x").checked){
+                return "";
+            }                
+            var vv = (GEBI(xname + "1").checked) ? "1" : "0";
+            return xname + "=" + vv + "&";
+        }
+        function fCheckHis(xname) {
+	    if(!GEBI(xname + "x"))return "";
+            if (GEBI(xname + "x").checked) {
+                return "";
+            }
+            var vv = "0";
+            if (GEBI(xname + "1").checked) vv = "1";
+            else if (GEBI(xname + "2").checked) vv = "2";
+            else if (GEBI(xname + "3").checked) vv = "3";
+            return xname + "=" + vv + "&";
+        }
+        var x = fStr("P") + fStr("HP") + fStr("MP") + fStr("LP") + fStr("DP");
+        x += fCheck("WEN") + fCheck("XEN") + fCheck("DEN") + fCheckHis("HEN")+fCheck("DIS");
+        var sintv = GEBI("idINTV").value;
+        if (sintv) {
+            x += "INTV=" + sintv + "&";
+        }
+        return x;
+    }
+    var g_grm;
+    function fDoPost(stext) {
+        var i, ret;
+        SetRet("开始提交");
+        var xmlhttp = CreateHttp();
+        xmlhttp.open("POST", "/SysMgr", false);
+        try {
+            xmlhttp.send(stext);
+            if (xmlhttp.status >= 500) {
+                return ["ERROR", "服务器内部错误：" + xmlhttp.status];
+            }
+            else if (xmlhttp.status !=200)
+                return ["ERROR", "禁止访问，错误码：" + xmlhttp.status];
+            ret=xmlhttp.responseText.split("\r\n")
+            return ret;
+        } catch (e) { 
+            return ["ERROR", "网络故障，修改失败！ "+e.message];
+        }       
+    }
+    function SetRet(s) {
+        var myDate = new Date();
+        GEBI("idRet").innerHTML = "------操作时间  " + myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds()+"------<br/><pre>"+s+"</pre>";
+    }
+    function fConvLine(s){
+        function fConvItemName(n){
+            if(n=='U')return "设备序号:\t\t";
+            if(n=='HP')return '高优先级密码:\t';
+            if(n=='MP')return '中优先级密码:\t';
+            if(n=='LP')return '低优先级密码:\t';
+            if(n=='DP')return '远程下载密码:\t';
+            if(n=='INTV')return '变量刷新周期:\t';
+            if(n=='WEN')return '内置网页系统:\t';
+            if(n=='HEN')return '历史数据功能:\t';
+            if(n=='XEN')return '外部HTTP接口:\t';
+            if(n=='DEN')return '远程下载功能:\t';
+            if (n == 'DIS') return '服务器端禁用:\t';
+            return "";
+        }
+        if (s == 'DP=')
+            return '远程下载密码:\t默认(12345678)\n'
+        var vx = s.split('=');
+        var tx=fConvItemName(vx[0]);
+        if (tx){
+            return tx + vx[1]+'\n';
+        } else {
+            return "";
+        }
+    }
+    function fBtnClick() {
+        if (!fChk1())
+            return;
+        if (g_grm.length > 1) {
+            alert('只能是单个设备！多个设备请用"批量修改"');
+            return;
+        }
+        var x = fMakeOtherInp();
+        x +="U="+ g_grm[0];
+        var ret = fDoPost(x);
+        if (ret[0] == "OK") {
+            //成功
+            ret.splice(0, 1);//删除第一行OK
+            var vsret="";
+            for (var i = 0; i < ret.length; i++) {
+                vsret+=fConvLine(ret[i]);
+            }
+            SetRet("<b>操作成功</b><br/>"+vsret);
+        }else {
+            SetRet("<i>"+ret.join("<br/>")+"</i>");
+        }
+    }
+    function fBtnMultiClick() {
+        if (!fChk1())
+            return;
+        var x = fMakeOtherInp();
+        var txt = "";
+        for (var i = 0; i < g_grm.length; i++) {
+            var ret = fDoPost(x + "U=" + g_grm[i]);
+            if (ret[0] == "OK") {
+                txt += "<b>成功</b> GRM=" + g_grm[i] + "<br/>";
+            }
+            else {
+                txt += "<i>失败!</i> GRM=" + g_grm[i] + ", " + ret[1] + "<br/>";
+            }
+        }
+        SetRet(txt);
+    }
+
+    function fChk1() {
+        var vp = GEBI("idP").value,i;
+        if (!vp) {
+            alert("管理密码不可为空");
+            return false;
+        }
+        g_grm = trim(GEBI('idGRM').value).split('\n');
+        for (i = 0; i < g_grm.length; i++) {
+            g_grm[i] = trim(g_grm[i]);
+            if (g_grm[i] === "") {
+                g_grm.splice(i, 1);
+                i--;
+            }                
+        }
+        if (g_grm.length == 0)   {
+            alert('设备序号不可为空');
+            return false;
+        }
+        for (i = 0; i < g_grm.length; i++) {
+            if (!CheckGRMID(g_grm[i])) {
+                alert('设备序号格式错误:' + g_grm[i]);
+                return false;
+            }
+        }
+        var sintv = GEBI("idINTV").value;
+        if (sintv) {
+            var v = parseInt(sintv, 10);
+            if (isNaN(v)) {
+                alert('变量刷新周期必须是数字');
+                return false;
+            }
+        }     
+        return true;
+    }
+//    alert(CheckGRMID("20001000005"));
+    //alert(CheckGRMID("20999999999"));
+</script>
+</head>
+<body class="smain">
+<div class="container">
+  <div class="logbox">
+    <div class="stitle"> Net Insight 管理系统 </div>
+      <table width="100%">
+        <tr>
+          <td width="25%" class="rt">设备序号<br />(每行一个)</td>
+          <td ><div class="textref">+++++++++++</div><textarea id="idGRM"></textarea> </td>
+        </tr>
+        <tr>
+          <td class="rt">管理密码</td>
+          <td><input class="seditsize" type="password" name="P" value="" maxlength="16" id="idP">
+          </td>
+        </tr>
+        <tr>
+        <td class="rtl">内置网页系统</td>
+          <td class="little">
+              <label><input id="WEN1" type="radio" name="WEN">启用&nbsp;</label>
+              <label><input id="WEN0" type="radio" name="WEN">禁用&nbsp;</label>
+              <label><input id="WENx" type="radio" name="WEN" checked>(不变)&nbsp;</label>
+          </td>
+        </tr>           
+        <tr>
+        <td class="rtl">外部HTTP接口</td>
+          <td class="little">
+              <label><input id="XEN1" type="radio" name="XEN">启用&nbsp;</label>
+              <label><input id="XEN0" type="radio" name="XEN">禁用&nbsp;</label>
+              <label><input id="XENx" type="radio" name="XEN" checked>(不变)&nbsp;</label>
+          </td>
+        </tr> 
+        <tr>
+            <td class="rtl">远程下载功能</td>
+            <td class="little">
+                <label><input id="DEN1" type="radio" name="DEN">启用&nbsp;</label>
+                <label><input id="DEN0" type="radio" name="DEN">禁用&nbsp;</label>
+                <label><input id="DENx" type="radio" name="DEN" checked>(不变)&nbsp;</label>
+            </td>
+        </tr>  
+        <tr>
+            <td class="rtl">历史数据功能</td>
+            <td class="little">
+                <label><input id="HEN1" type="radio" name="HEN">小容量32M&nbsp;</label>
+                <label><input id="HEN2" type="radio" name="HEN">中容量128M&nbsp;</label>
+                <label><input id="HEN3" type="radio" name="HEN">大容量512M&nbsp;</label>
+                <label><input id="HEN0" type="radio" name="HEN">禁用&nbsp;</label>
+                <label><input id="HENx" type="radio" name="HEN" checked>(不变)&nbsp;</label>
+            </td>
+        </tr>  
+          <tr>
+              <td class="rtl">修改远程下载密码</td>
+              <td class="little">
+                  <input name="DP" type="text" value="" maxlength="16" id="idDP"><br>
+              </td>
+          </tr>                           
+        <tr>
+          <td class="rtl">修改高优先级密码</td>
+          <td class="little">
+          <input name="HP" type="text" value="" maxlength="16" id="idHP"><br>
+          </td>
+        </tr> 
+        <tr>
+          <td class="rtl">修改中优先级密码</td>
+          <td class="little">
+          <input name="MP" type="text" value="" maxlength="16" id="idMP"><br>
+          </td>
+        </tr> 
+        <tr>
+          <td class="rtl">修改低优先级密码</td>
+          <td class="little">
+          <input name="LP" type="text" value="" maxlength="16" id="idLP"><br>
+          </td>
+        </tr>      
+        <tr>
+          <td class="rtl">变量刷新周期<br>(单位0.1秒)</td>
+          <td class="little">
+          <input name="INTV" type="text" value="" id="idINTV"><br>
+          </td>
+        </tr>    
+        <tr>
+            <td class="rtl">服务器端强制禁用</td>
+            <td class="little">
+                <label><input id="DIS1" type="radio" name="DIS">禁用&nbsp;</label>
+                <label><input id="DIS0" type="radio" name="DIS">启用&nbsp;</label>
+                <label><input id="DISx" type="radio" name="DIS" checked>(不变)&nbsp;</label>
+            </td>
+        </tr>                                        
+        <tr><td>&nbsp;</td><td> <input class="sbtnsize" type="button" value="查看/修改单个！" onclick="fBtnClick();">&nbsp;&nbsp;
+                               <input class="sbtnsize" type="button" value="批量修改！" onclick="fBtnMultiClick();"></td></tr>            
+      </table>
+    <ul style="padding:10px">
+      <li>设备序号和管理密码必填,其他地方如果留空，表示该项不修改</li> 
+        <li>如果只用于查看，可以所有地方都不修改</li>    
+        <li>启用远程下载功能无需修改下载密码，内部会自动使用“12345678”，除非要帮客户复位默认密码</li>    
+         
+    </ul>
+      <div id="idRet" style="color:#00A; border-width:1px;border-style:double; border-color:#604040;padding:4px;margin:4px; font-size:medium"></div>
+    <div class="footer"> 广州市巨控电子科技有限公司，版权所有&copy;<br/>
+公司主页 <a href="http://www.giantcontrol.com" target=_blank>http://www.giantcontrol.com</a><br/>
+<!--
+页面生成时间：[<#DATETIME format="yyyy'年'mmmmdd'日',hh:nn:ss.zzz">]
+-->
+    </div>
+  </div>
+</div>
+</body>
+</html>

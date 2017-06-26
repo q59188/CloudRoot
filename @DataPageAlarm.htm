@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html><head><meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!--edge这一行指定用最高版本的IE核心-->
+<!--[if vml]> <style>vml\:* {behavior: url(#default#VML);}</style> <![endif]-->
+<!--[if lt IE 9]> <script type="text/javascript" src="PIE_IE678.js"></script> <![endif]-->
+<!--[if IE 9]> <script type="text/javascript" src="PIE_IE9.js"></script> <![endif]-->
+<title><#GRM_NAME></title>
+<link rel="stylesheet" type="text/css" href="mycss.css" />
+<script src="myjs.js"></script>
+<style>
+    .container {width: 98%;margin: 0 auto;min-width:640px;max-width:1280px;}
+     .clInp {
+        border: 1px solid #999;
+        font-size: large;
+        margin:5px;
+        width:5.5em;
+    }
+    #idDays {
+        width: 2em;
+        font-size: large;
+        border: 1px solid #999;
+    }
+    button {
+        font-size: large;
+        height:34px;
+        line-height:30px;
+    }
+</style>
+<script>
+    var GRM = {
+        id: '20001000005', name: '冷库远程监控系统1', sid: '58A1C84F30BBF09A', cmt: '天津商业大学XX楼XX冷库', img: 'DefImg.gif', SP: '', home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 2,
+        tmP: '2015-02-09,14:24:03.104', tmA: '2015-02-09,14:24:02.839', tmL: '2015-02-09,12:06:32.149', st: 3, cols: 2, mob: 0
+    };
+
+    //<#param1>
+    //<#param2>
+    function fBodyLoad() {
+        divMsg = GEBI("idMsg");
+        GEBI('idimg').innerHTML = '<img src="/devimg/' + GRM.img + '">';
+        try {
+            if (PIE) {
+                for (var i = 0; i < TabItems.length; i++)
+                    PIE.attach(GEBI('idmuli' + i));
+            }
+        }
+        catch (e) { }
+        GEBI("idInpCal").value = new Date().format('yyyy-MM-dd');
+        GEBI("idDownLoad").disabled = true;
+        fAlmSetTable();
+        fAlmQuery();
+    }
+</script> 
+</head>
+<body onload="fBodyLoad();">
+<div class="header">
+    <iframe id="downloadframe" style="display:none"></iframe>
+    <script>
+          (function () {
+              if (GRM.xmob) {
+                  DR('<div id="idimg"></div>');
+                  DR('<table width="100%">');
+                  DR('<tr><td><h1>');
+              }
+              else {
+                  DR('<table width="100%">');
+                  DR('<tr><td width="160px" ><div id="idimg"></div></td><td><h1>');
+              } //((GRM.xmob) ? '<br>' : '') +
+              DR('<span id="idGrmName">' + GRM.name + ' (报警短信)</span>' + ' <span style="font-size:66%">');
+        if (GRM.pr == 2)
+            DR('<a href="/nimanage?SID=' + GRM.sid + '&RN=' + GRM.rn + '">[设备管理]</a>');
+        if (!GRM.xmob) {
+            DR('<a href="' + GRM.home + '" target="_top">[返回登录页]</a></span>');
+        }
+        DR('</h1>');
+    })();
+    </script>
+<p id="idGrmCmt"><script>document.write(GRM.cmt);</script></p>
+<div class="mu">
+<div style="margin-top:0px;margin-bottom:0px; padding:0px">
+<script>
+    fniMakeTab();
+</script><div class="back"></div>
+</div></div></td></tr>
+</table>
+</div>
+    <div id="main" style="background-image:url(/nimanage_bg.png); background-repeat:repeat; min-height:82%;">
+        <div class="content">
+            <div style="width:95%; margin:0 auto" id="idxxDiv">
+                <div style="border-style:dashed;border-width:1px; background:#fffc6b; min-height:3em; padding:6px; display:none;" id="idMsg" onclick="HideMsg();">Msssage!</div>
+                <div style="margin-bottom:10px">
+                    <label style="display:inline-block">查询时间<input type="text" class="clInp" style="" onclick="HideMsg(); fSetStart(this); fPopCalendar(event, this, this);" onfocus="    this.select()" readonly="readonly" value="2015-06-01" id="idInpCal" /></label>
+                    方向:<label style="display:inline-block"><input type="radio" id="idDec" name="nminc" checked="checked">向后(过去)</label> &nbsp; <label style="display:inline-block"><input type="radio" id="idInc" name="nminc">向前(未来)</label>&nbsp;
+                    <input type="text" id="idDays" value="3" maxlength="3" /><label style="display:inline-block"><input type="radio" id="idrdDay" name="nmDWM" checked="checked">天&nbsp;</label><label style="display:inline-block"><input type="radio" id="idrdWeek" name="nmDWM">周&nbsp;</label><label style="display:inline-block"><input type="radio" id="idrdMonth" name="nmDWM">月&nbsp;</label>
+                    <script>if (GRM.xmob) DR('<br>');</script>
+                     <button onclick="fAlmQuery();">
+                    <script>
+                        document.write(fGetGvImg("OK_18px"));
+                    </script> 
+                        <span style="vertical-align:top">查询</span>
+                    </button>
+                    <button id="idDownLoadBtn" onclick="fAlmExport()"  style="display:none;">
+                <script>document.write(fGetGvImg("Export_18px"));</script>
+                     <span style="vertical-align:top">导出</span> </button>
+                     <span id="idDownLoad" style="display:none;text-decoration:underline"><a id="idDownURL" href="">[点这里下载]</a></span>
+<label style="display:inline-block"><input type="checkbox" id="idIncDate">查询后自动更新时间</label>&nbsp;
+                    <button onclick="fAlmQueryG();" style="display:inline-block;float:right">
+                        <script>
+                        //document.write(fGetGvImg("OK_18px"));
+                        </script>
+                        <span style="vertical-align:top">统计信息</span>
+                    </button>
+                </div>
+                <div id="idDivTab">
+                </div>
+            </div>
+        </div>
+    </div><div class="clearfix"></div>
+    <script>
+ document.write(getDateDiv());
+   if (GRM.xmob) { GI("idxxDiv").style.width = "100%"; }
+    </script>
+<!--<div class="footer" id="idfooter"></div>-->
+</body></html>

@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title><#grm_name></title>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="PIE_IE678.js"></script>
+    <![endif]-->
+    <!--[if IE 9]>
+    <script type="text/javascript" src="PIE_IE9.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="mycss.css" />
+    <script src="myjs.js"></script>
+    <script type="text/javascript">
+	var ishttps = 'https:' == document.location.protocol ? true: false;
+        var GRM = {
+            id:'20001000005',name:'冷库远程监控系统1',sid:'58A1C84F30BBF09A',cmt:'天津商业大学XX楼XX冷库',img:'DefImg.gif',SP:'',home:'http://192.168.1.110',pr:2,pg:0,rn:2,
+            tmP:'2015-02-09,14:24:03.104',tmA:'2015-02-09,14:24:02.839',tmL:'2015-02-09,12:06:32.149',st:3,cols:2,mob:0};
+        var TabItems = [];
+        var ajcount = 0;
+        var xmlhttp;
+        var MAPINF ={err:0,x:118.2236,y:37.5204,pos:"山东省东营市利津县s310",near:"利津县利津镇前刘小学",base:[{x:118.2236,y:37.5234,lac:33224,cell:1220,rssi:12}]};
+        //<#param1>
+        //<#param2>
+        if (MAPINF.near == "(null)") MAPINF.near = "";
+        if (MAPINF.pos == "(null)") MAPINF.pos = "(无地址信息)";
+        MAPINF.full = "设备位置:" + MAPINF.pos + ", 经纬度(" + MAPINF.x + "," + MAPINF.y + ")";
+        if(MAPINF.near)
+            MAPINF.full += ", 临近: " + MAPINF.near;
+        if (MAPINF.err)
+            MAPINF.full = "设备位置: (无数据)";
+        var msdelay = 11000;
+        function fx1sec() {
+            msdelay -= 1000;
+            document.getElementById("idDelaySec").innerHTML = String(msdelay / 1000);
+            if (msdelay == 0) {
+                self.location.reload();
+            }
+        }
+        function fBodyLoad() {
+            if (MAPINF.err) {
+                setInterval(fx1sec, 1000);
+                fx1sec();
+            }
+
+            fUpdateFooter();
+        }
+    </script>
+</head>
+<body onload="fBodyLoad();">
+    <div id="wrap">
+        <div id="main">
+            <div class="header">
+                <table width="100%">
+                    <tr>
+                        <td width="160px" id="idimg">
+                            <script>document.write('<img src="/devimg/' + GRM.img + '">');</script>
+                        </td>
+                        <td>
+                            <h1>
+                                <script>
+                                    (function () {
+                                        document.write('<span id="idGrmName">' + GRM.name + '</span> <span style="font-size:66%"><a href="/ni?SID=' + GRM.sid + '&PG=' + GRM.pg + '&RN=' + GRM.rn + '">[刷新本页]</a>');
+                                        if (GRM.pr == 2)
+                                            document.write('<a href="/nimanage?SID=' + GRM.sid + '&RN=' + GRM.rn + '">[设备管理]</a>');
+                                        if (!GRM.xmob) {
+                                            document.write('<a href="' + GRM.home + '" target="_top">[返回登录页]</a></span>');
+                                        }
+                                    })();
+                                </script>
+                            </h1><p id="idGrmCmt">
+                                <script>
+                                document.write(MAPINF.full);
+                                </script>
+                            </p>
+                            <div class="mu">
+                                <div style="margin-top:0px;margin-bottom:0px; padding:0px">
+                                    <script>
+                                        (function () {
+                                            var i, sact, ret = '';
+                                            for (i = 0; i < TabItems.length; i++) {
+                                                sact = (TabItems[i].pg == GRM.pg) ? ' class="sel" ' : '';
+                                                ret += ('<li' + sact + ' id="idmuli' + i + '"><a href="/ni?SID=' + GRM.sid + '&PG=' + TabItems[i].pg + '&RN=' + GRM.rn + '"> &nbsp;' + TabItems[i].n + '&nbsp; </a></li>');
+                                            } document.write('<ul>' + ret + '</ul>');
+                                        })();
+                                    </script><div class="back"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div><div class="content">
+                <script>
+                          try {
+                              if (PIE) {
+                                  for (var i = 0; i < TabItems.length; i++)
+                                      PIE.attach(document.getElementById('idmuli' + i));
+                              }
+                          }
+                          catch (e) { }
+                          if (MAPINF.err)
+                              document.write('<p style="font-size:150%; color:#006; font-weight:bold; text-align:center;">正在获取定位数据,<span id="idDelaySec"></span>秒后自动刷新...</p>');
+                </script>
+                <script>
+//按照是否https选择百度地图容器
+  if(ishttps){document.write('<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=A075113c1bd1bd96e35f43fdc155b7bb&s=1"><\/script>');}
+else{document.write('<script type="text/javascript" src="http://api.map.baidu.com/api?key=A075113c1bd1bd96e35f43fdc155b7bb&v=1.1&services=true"><\/script>');}
+                </script>
+
+                <div id="dituContent" style="border-bottom: #ccc 1px solid; border-left: #ccc 1px solid; margin: auto; width:720px; height: 500px; border-top: #ccc 1px solid; border-right: #ccc 1px solid;">
+                    &nbsp;
+                </div>
+                <script type="text/javascript">
+                          //创建和初始化地图函数：
+                          function initMap(){
+                              createMap();//创建地图
+                              setMapEvent();//设置地图事件
+                              addMapControl();//向地图添加控件
+                              addMarker();//向地图中添加marker
+                          }
+                          //创建地图函数：
+                          function createMap(){
+                              var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
+                              var point = new BMap.Point(MAPINF.x,MAPINF.y);//定义一个中心点坐标
+                              map.centerAndZoom(point,17);//设定地图的中心点和坐标并将地图显示在地图容器中
+                              window.map = map;//将map变量存储在全局
+                          }
+                          //地图事件设置函数：
+                          function setMapEvent(){
+                              map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+                              map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+                              map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+                              map.enableKeyboard();//启用键盘上下左右键移动地图
+                          }
+                          //地图控件添加函数：
+                          function addMapControl(){
+                              //向地图中添加缩放控件
+                              var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+                              map.addControl(ctrl_nav);
+                              //向地图中添加缩略图控件
+                              var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+                              map.addControl(ctrl_ove);
+                              //向地图中添加比例尺控件
+                              var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+                              map.addControl(ctrl_sca);
+                          }
+                          //标注点数组
+                          //创建marker
+                          var markerArr = [{ title: GRM.name, content: MAPINF.full, point: MAPINF.x + "|" + MAPINF.y, isOpen: 0 }];
+                          function addMarker() {
+                              var icon={w:21,h:21,l:0,t:0,x:6,lb:5};
+                              var i;
+                              var arrlen = MAPINF.base.length;
+                              //arrlen = 0;
+                              for (i = 0; i < arrlen; i++) {
+                                  markerArr[i + 1] = { title: "基站" + (i + 1), content: "信号强度:" + MAPINF.base[i].rssi + ", 基站ID:" + MAPINF.base[i].lac  +"_" + MAPINF.base[i].cell, point: MAPINF.base[i].x + "|" + MAPINF.base[i] .y}
+                              }
+                              for(var i=0;i<markerArr.length;i++){
+                                  var json = markerArr[i];
+                                  var p0 = json.point.split("|")[0];
+                                  var p1 = json.point.split("|")[1];
+                                  var point = new BMap.Point(p0,p1);
+                                  var iconImg;
+                                  if(i==0)
+                                  {
+                                      iconImg =undefined;
+                                  }
+                                  else
+                                  {
+                                      iconImg = createIcon(icon);
+                                  }
+                                  var marker = new BMap.Marker(point,{icon:iconImg});
+                                  var iw = createInfoWindow(i);
+                                  var label = new BMap.Label(json.title,{"offset":new BMap.Size(icon.lb-icon.x+10,-20)});
+                                  marker.setLabel(label);
+                                  map.addOverlay(marker);
+                                  label.setStyle({
+                                      borderColor:"#808080",
+                                      color:"#333",
+                                      cursor:"pointer"
+                                  });
+                                  (function(){
+                                      var index = i;
+                                      var _iw = createInfoWindow(i);
+                                      var _marker = marker;
+                                      _marker.addEventListener("click",function(){
+                                          this.openInfoWindow(_iw);
+                                      });
+                                      _iw.addEventListener("open",function(){
+                                          _marker.getLabel().hide();
+                                      })
+                                      _iw.addEventListener("close",function(){
+                                          _marker.getLabel().show();
+                                      })
+                                      label.addEventListener("click",function(){
+                                          _marker.openInfoWindow(_iw);
+                                      })
+                                      if(!!json.isOpen){
+                                          label.hide();
+                                          _marker.openInfoWindow(_iw);
+                                      }
+                                  })()
+                              }
+                          }
+                          //创建InfoWindow
+                          function createInfoWindow(i){
+                              var json = markerArr[i];
+                              var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
+                              return iw;
+                          }
+                          //创建一个Icon
+                          function createIcon(json){
+                              var icon = new BMap.Icon("/gvbase.ico",new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
+                              return icon;
+                          }
+                          if (!MAPINF.err)
+                            initMap();//创建和初始化地图
+                </script>
+            </div>
+        </div>
+    </div><div class="clearfix"></div>
+    <div class="footer" id="idfooter"></div>
+</body>
+</html>

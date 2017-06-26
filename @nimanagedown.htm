@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>远程下载管理-<#GRM_ID></title>
+<style>
+ul, ol, dl, form {
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin-top: 0;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+.smain {
+	font-family:Arial, Helvetica, sans-serif;
+	background-color:#EEE;
+}
+.container {
+	width:90%;
+	max-width:720px;
+	min-width:320px;
+	margin: 0 auto;
+}
+
+.seditsize {
+	max-width:480px;
+	font-size:100%
+}
+.sbtnsize {
+	font-size:100%;
+    font-weight:bold;
+    color:#0000A0;
+}
+.stitle {
+	text-align:center;
+	font-size:150%;
+	background-color:#9CF;
+}
+.sinp {
+	background-color:#EEE;
+}
+table {
+	border-collapse:collapse;
+	border-color:#000;
+}
+tr {
+	border-color:#000;
+}
+td {
+	border-color:#333;
+}
+td.rt {
+	text-align:right;
+}
+ul {
+	margin:0;
+	list-style-position:inside;
+	font-size:75%;
+	color:#333;
+	background-color:#CCC;
+}
+button{
+    font-size:large;
+}
+</style>
+<script language="javascript">
+    var GRM = {
+        id: '50999999981', name: 'GRM502设备1', sid: '4E63EA30C14220F7', cmt: '设备描述信息...', img: 'DefImg.gif', SP: '', grmt: 'GRM503-N2L', home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 5,
+        tmP: '2015-04-30,12:20:51.748', tmA: '2015-04-30,12:20:48.861', tmL: '2015-04-30,12:19:12.999', st: 3, cols: 2, mob: 1, x_ip: 0, x_d: 0, x_den: 1, x_dip: 1
+    };
+    var WGI = { cmt: '设备描述信息...', img: 'DefImg.gif', cols: 2, tmprjf: '2015-05-04,14:47:51.833', tmprj: '2015-05-04,14:47:54.017', prjerr: 0, prjfn: '', tmfwf: '', tmfw: '', fwerr: 1 };
+    function GEBI(a){
+        return document.getElementById(a);
+    }
+    function msgbox(a){
+        window.alert(a);
+    }
+    //<#PARAM1>
+    //<#PARAM2>
+
+    GRM.x_devd = GRM.grmt.length > 0;
+    GRM.x_stddown =  !GRM.x_dip&&(GRM.x_devd);
+    function CreateHttp() {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            var MSXML = ['MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
+            for (var n = 0; n < MSXML.length; n++) {
+                try { xmlhttp = new ActiveXObject(MSXML[n]); break; } catch (e) { }
+            }
+        }
+        return xmlhttp;
+    }
+    function fDoPost() {
+        var xmlhttp = CreateHttp();
+        var i, stext = "";
+        for (i = 1; i <= 3; i++) {
+            stext += (GI("autoip" + i).checked + 0) + "&";
+            stext += GI("ip" + i).value + "&";
+            stext += GI("mask" + i).value + "&";
+            stext += GI("gate" + i).value + "&";
+            stext += GI("dns" + i).value + "&";
+        }
+        stext = stext.substr(0, stext.length - 1);
+        xmlhttp.open("POST", "/SysSet.cgi", false);
+        try {
+            xmlhttp.send(stext);
+            window.alert("提交成功！");
+            window.location.href = "/";
+        } catch (e) { window.alert("网络故障，修改失败！"); }
+    }
+
+
+function fBodyLoad(){
+
+}
+function fEditDownPassChk() {
+    var dsp = GEBI("idEditDownPassChk").checked ? 'block' : 'none';
+    GEBI("idEditPassTab").style.display = dsp;
+    GEBI("idEditPassTab").style.borderWidth = "1px";
+}
+function fCheckPassFmt(v, dig) {
+    if (v.length == 0)
+        return 5;
+    if (v.length < dig)
+        return 3;
+    if (v.length > 16)
+        return 4;
+    var num = 0;
+    var reg = /\d/; //如果有数字
+    if (reg.test(v)) {
+        num++;
+    }
+    reg = /[a-zA-Z]/; //如果有字母
+    if (reg.test(v)) {
+        num++;
+    }
+    if(num<2)
+        return 1;
+    reg = /[^0-9a-zA-Z]/; //如果有特殊字符
+    if (reg.test(v)) {
+        return 2;
+    }
+    return 0;
+}
+function fPassFmt2Str(iv,dig){
+    if(iv==0)return "";
+    if(iv==1)return "密码必须同时含有字母(大小写均可)和数字";
+    if(iv==2)return "密码不能有字母(大小写均可)和数字之外的其它字符";
+    if(iv==3)return "密码长度不够，至少要"+dig+"位";
+    if (iv == 4) return "密码不可超过16位";
+    if (iv == 5) return "密码不可为空";
+    return "#ERROR";
+}
+function fCheckUpload() {
+    var ff = GEBI("idupfile");
+    if (ff.value){
+        return true;
+    }
+    window.alert("没有选择文件！");
+    return false;
+}
+function errcode2str(err) {
+    if (err == 0) return '<span style="color:#080">下载成功</span>';
+    else if (err == 1) return (GRM.st == 5 ?'<span style="color:#008">下载中</span>':'<span style="color:#008">等待下载中</span>');
+    else if (err == 2) return '<span style="color:#F00">外部存储器错误(可能没有外部存储器), 无法下载</span>';
+    else if (err == 3) return '无信息';
+}
+</script>
+</head>
+<body class="smain"  onload="fBodyLoad();">
+    <div class="container">
+        <div class="stitle">远程下载模块配置工程 --- GRM设备序号: <#grm_id> <button onclick="location.reload(true);">刷新页面</button>
+    <br />  
+<script> 
+    document.write('<a href="/ni?SID=' + GRM.sid + '&RN=' + GRM.rn + '">[返回设备数据页面]</a> &nbsp;&nbsp');
+    document.write('<a href="/nimanage?SID=' + GRM.sid + '&RN=' + GRM.rn + '">[返回设备管理页面]</a>');
+</script> 
+                                                  
+</div>
+        <p style="font-size:3px">&nbsp;</p>
+        <div class="logbox">
+            <div class="stitle">历史下载信息：</div>
+            <script>
+                document.writeln('<table width="100%" border="1">');
+                document.write('<tr><td class="rt" width="40%">上次下载状态</td><td>');
+                document.write(errcode2str(WGI.prjerr));
+                document.write('</td></tr>');
+                document.write('<tr><td class="rt" width="40%">上次下载的文件名</td><td>');
+                document.write(WGI.prjfn);
+                document.write('</td></tr>');
+                document.write('<tr><td class="rt" width="40%">上次下载的提交时间</td><td>');
+                document.write(WGI.tmprjf);
+                document.write('</td></tr>');
+                document.write('<tr><td class="rt" width="40%">上次下载的完成时间</td><td>');
+                document.write((WGI.prjerr==1&&GRM.st==3)?"":WGI.tmprj);
+                document.write('</td></tr>');
+                document.write('</table>');                                
+            </script>
+        </div>
+        <p style="font-size:3px">&nbsp;</p>
+        <div class="logbox">
+            <div class="stitle">上传新的工程文件</div>
+            <form class="sinp" action="<#MANAGEDOWN_UP>" method="post" enctype="multipart/form-data" onsubmit="return fCheckUpload()">
+                <label><input type="checkbox" name="chkNoPhone" value="1" /> 不下载电话号码本</label><br />
+                <label><input type="checkbox" name="chkNoSaveVar" value="1" /> 不下载掉电保存变量</label><br />
+                <label><input type="checkbox" name="chkUseOtherServer" value="1" />允许下载的工程使用其它登录服务器(给自建服务器的用户切换服务器使用，<br />该工程下载后将<span style="color:#A00; font-weight:bold">不能再由本服务器管理!</span>)</label><br />
+                <input type="file" id="idupfile" title="选择待下载文件..." name="F" style="font-size: 100%;width:24em;border-style:solid;border-width:1px;border-color:#000;" accept=".grmdat,.sdat">
+                <input class="sbtnsize" type="submit" value="开始上传！"><br />
+            </form>
+        </div>
+    </div>
+</body>
+</html>
