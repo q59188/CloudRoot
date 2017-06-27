@@ -106,39 +106,7 @@ var GRM = {
     id: '20001000005', name: '冷库远程监控系统1', sid: '58A1C84F30BBF09A', cmt: '天津商业大学XX楼XX冷库', img: 'DefImg.gif', SP: '', home: 'http://192.168.1.110', pr: 2, pg: 0, rn: 2,
     tmP: '2015-02-09,14:24:03.104', tmA: '2015-02-09,14:24:02.839', tmL: '2015-02-09,12:06:32.149', st: 3, cols: 2, mob: 0
 };
-var hispage = {
-    cols: 2, items: [
-        {
-            tabname:'曲线图1',
-            caption: '巨控测试设备的曲线图1',
-            caption_color:'#333',
-            bg_color: '#FFF',//背景色，表格模式也是表格的背景色
-            grid_color: '#999',//网格色，表格模式也是表格的网格色
 
-            tab_cols: 0,//非0就是表格模式，此时代表表格的列数，可取1-6
-            tab_tmcolor:'#AA4',//时间列的显示颜色
-            tf_line: 1,
-            vf_line: 1,
-            smooth:false,
-            y_caption:"数值",
-            y_auto:1,
-            y_min: 0,
-            y_max: 100,
-            
-            y2_enable:1,
-            y2_caption: "数值2",
-            y2_auto: 1,
-            y2_min: 100000,
-            y2_max: 200000,
-
-            v_var: [
-            { name: '$Second', display: '温度', color: '#050', unit: '℃' },
-            { name: 'VINT1', display: '参数_VINT1', color: '#550', use_y2: 1, unit: '' },
-            { name: 'VINT11', display: '参数_时分秒', color: '#F00', use_y2: 1, unit: '' }
-            ]
-        }
-    ]
-};
 
 //<#param1>
 //

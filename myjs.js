@@ -1075,15 +1075,56 @@ function fHisQuery() {
         tend = tmbase;
     }
     tend.setTime(tend.getTime());
-    HisQuery(tbegin, tend, isinc, 1000);
+    var obj = HisQuery(tbegin, tend, isinc, 1000);
+    var timeArr = obj.timeArr;
+    var z = obj.m.split(",");
+    var too = {};
+    for(var mmi=0;mmi < z.length;mmi++){
+        too[z[mmi]] = [];
+        for(var ssi=0;ssi<timeArr.length ;ssi ++){
+            for(var zzi = 0; zzi < timeArr[ssi].length;zzi++){
+                if(mmi+2 == zzi){
+                    too[z[mmi]].push(parseInt(timeArr[ssi][zzi]));
+                }
+            }
+        }
+    }
+    var max = {},min = {},ave = {};
+    var his = GRM.pg - 950;
+    var ss = hispage.items[his].v_var;
+    Array.prototype.reduces = function (x){
+        var s=0;
+        for (var i =0;i<this.length;i++){
+            s += this[i];
+        }
+        if(x > 0){
+            s = (s/this.length).toFixed(x);
+        }else{
+            s = (s/this.length);
+        }
+        return s;
+    }
+    var ossDiv = document.createElement("div");
+    ossDiv.id = "mSdiv";
+    var s = "";
+    s = "<table style='margin:0;width:100%;'><thead><tr><td>属性名</td><td>最小值</td><td>最大值</td><td>平均值</td></tr></thead>"
+    for(var ls = 0; ls < ss.length;ls++){
+        min[ss[ls].name] = too[ss[ls].name][0];
+        max[ss[ls].name] = too[ss[ls].name][too[ss[ls].name].length -1];
+        ave[ss[ls].name] = too[ss[ls].name].reduces(ss[ls].fnum);
+        s += "<tbody><tr><td>"+ss[ls].name+"</td><td>"+min[ss[ls].name]+"</td><td>"+max[ss[ls].name]+"</td><td>"+ave[ss[ls].name]+"</td></tr></tbody>"
+    }
+    ossDiv.innerHTML = s +　"</table>";
+    if(!GI("mSdiv"))GI("idxxDiv").appendChild(ossDiv);
+    GI("mSdiv").innerHTML = s;
     g_His.qtBegin = tbegin;
     g_His.qtEnd = tend;
     g_His.isInc = isinc;
     fHisSetRet();
     if (isupdate) {
         tend.setTime(tend.getTime());
-        GI("idInpCal").value = tm2.format('yyyy-MM-dd');
-        GI("idInpTime").value = tm2.format('hh:mm:ss');
+        GI("idInpCal").value = StrTMToDateTime(timeArr[timeArr.length - 1][1]).format("yyyy-MM-dd");
+        GI("idInpTime").value = StrTMToDateTime(timeArr[timeArr.length - 1][1]).format("hh:mm:ss");
     }
 
     if (g_His.AllRecCount > 0) {
@@ -1092,9 +1133,11 @@ function fHisQuery() {
     else {
         GI("idDownLoadBtn").style.display = "none";
     }
+
+
 }
 
-function HisQuery(tmbegin, tmend, isinc, maxcnt) {
+function HisQuery(tmbegin, tmend, isinc, maxcnt){
     var sbegin = DateTimeToStrTM(tmbegin);
     var send = DateTimeToStrTM(tmend);
     var xmlhttp = CreateHttp();
@@ -1144,6 +1187,7 @@ function HisQuery(tmbegin, tmend, isinc, maxcnt) {
         }
         ShowMsg(g_His.GrmErrorMsg);
         return;
+        
     }
     var meta = ret[1].split(",");
     //OnlineFlag,TimeZone,RecCount, ClipFlag,DbOldTime,DbNewTime,MaxQuery
@@ -1155,13 +1199,14 @@ function HisQuery(tmbegin, tmend, isinc, maxcnt) {
     g_His.DbNewTime = StrTMToDateTime(meta[5]);
     g_His.MaxQuery = meta[6] - 0;
     var msgcnt = meta[2] - 0;
-    var amsg, ameta, atm, tmpval;
+    var amsg, ameta, atm, tmpval,timeArr=[];
     for (j = 0; j < varcount; j++) {
         hisdef.v_var[j].dval.length = msgcnt;
     }
     for (i = 0; i < msgcnt; i++) {
         ameta = ret[2 + i].split(",");
         atm = StrTMToUTC(ameta[1]);
+        timeArr.push(ameta);
         hisdef.ret_tms.push(StrTMToStr(ameta[1]));
         if (hisdef.tab_cols == 0 && !isinc) {
             for (j = 0; j < varcount; j++) {
@@ -1186,6 +1231,10 @@ function HisQuery(tmbegin, tmend, isinc, maxcnt) {
         }
         ShowInfoMsg(infss);
     }
+    var obj = {};
+    obj.m = valname;
+    obj.timeArr = timeArr;
+    return obj;
 }
 
 function fHisSetRet() {
